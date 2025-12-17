@@ -12,9 +12,11 @@ import { colors, commonStyles } from '@/styles/commonStyles';
 import { members, partyInfo } from '@/data/partyData';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
+import { useAdmin } from '@/contexts/AdminContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { isAdmin } = useAdmin();
 
   return (
     <View style={commonStyles.container}>
@@ -31,6 +33,34 @@ export default function ProfileScreen() {
           />
           <Text style={styles.title}>Menu Principal</Text>
         </View>
+
+        {isAdmin && (
+          <View style={styles.adminSection}>
+            <TouchableOpacity
+              style={styles.adminCard}
+              onPress={() => router.push('/(tabs)/admin-dashboard')}
+            >
+              <View style={styles.adminIconContainer}>
+                <IconSymbol
+                  android_material_icon_name="admin-panel-settings"
+                  ios_icon_name="lock.shield"
+                  size={32}
+                  color={colors.white}
+                />
+              </View>
+              <View style={styles.adminContent}>
+                <Text style={styles.adminTitle}>Tableau de Bord Admin</Text>
+                <Text style={styles.adminSubtitle}>Gérer le contenu de l&apos;application</Text>
+              </View>
+              <IconSymbol
+                android_material_icon_name="chevron-right"
+                ios_icon_name="chevron.right"
+                size={24}
+                color={colors.white}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Navigation</Text>
@@ -149,6 +179,30 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        {!isAdmin && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Administration</Text>
+            <TouchableOpacity
+              style={styles.adminLoginButton}
+              onPress={() => router.push('/(tabs)/admin-login')}
+            >
+              <IconSymbol
+                android_material_icon_name="admin-panel-settings"
+                ios_icon_name="lock.shield"
+                size={24}
+                color={colors.primary}
+              />
+              <Text style={styles.menuText}>Connexion Administrateur</Text>
+              <IconSymbol
+                android_material_icon_name="chevron-right"
+                ios_icon_name="chevron.right"
+                size={20}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>{partyInfo.motto}</Text>
           <Text style={styles.infoText}>{partyInfo.fullName}</Text>
@@ -183,6 +237,41 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
   },
+  adminSection: {
+    marginBottom: 24,
+  },
+  adminCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
+    elevation: 4,
+  },
+  adminIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  adminContent: {
+    flex: 1,
+  },
+  adminTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.white,
+    marginBottom: 4,
+  },
+  adminSubtitle: {
+    fontSize: 13,
+    color: colors.white,
+    opacity: 0.9,
+  },
   section: {
     marginBottom: 24,
   },
@@ -201,6 +290,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
     elevation: 2,
+  },
+  adminLoginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   menuText: {
     flex: 1,
