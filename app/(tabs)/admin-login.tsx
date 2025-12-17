@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -21,16 +21,12 @@ export default function AdminLoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, isAdmin, isLoading } = useAdmin();
+  const { login } = useAdmin();
   const router = useRouter();
 
-  // Rediriger si déjà connecté
-  useEffect(() => {
-    if (!isLoading && isAdmin) {
-      console.log('✅ L\'utilisateur est déjà admin, redirection vers le tableau de bord...');
-      router.replace('/(tabs)/admin-dashboard');
-    }
-  }, [isAdmin, isLoading]);
+  // REDIRECTION AUTOMATIQUE SUPPRIMÉE
+  // L'utilisateur doit maintenant se connecter manuellement à chaque fois
+  // Même s'il a une session active, il doit entrer ses identifiants
 
   const handleLogin = async () => {
     console.log('🔐 Bouton de connexion pressé');
@@ -80,16 +76,6 @@ export default function AdminLoginScreen() {
     setPassword('ARM2024@Mali');
     Alert.alert('✅ Succès', 'Les identifiants par défaut ont été remplis. Appuyez sur "Se connecter".');
   };
-
-  // Afficher le chargement pendant la vérification de l'authentification
-  if (isLoading) {
-    return (
-      <View style={[commonStyles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Vérification...</Text>
-      </View>
-    );
-  }
 
   return (
     <KeyboardAvoidingView
@@ -249,10 +235,9 @@ export default function AdminLoginScreen() {
         </View>
 
         <View style={styles.successInfo}>
-          <Text style={styles.successTitle}>✅ Système de connexion sécurisé</Text>
+          <Text style={styles.successTitle}>✅ Connexion manuelle requise</Text>
           <Text style={styles.successText}>
-            Le mot de passe est toujours masqué pour garantir la sécurité. 
-            Seul l&apos;administrateur connaît les identifiants de connexion.
+            La connexion automatique a été désactivée. Vous devez maintenant entrer vos identifiants à chaque fois pour accéder à l&apos;espace administrateur.
           </Text>
         </View>
 
@@ -269,15 +254,6 @@ export default function AdminLoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
   scrollContent: {
     flexGrow: 1,
     paddingTop: 60,

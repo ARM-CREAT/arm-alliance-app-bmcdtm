@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AdminContextType {
@@ -21,7 +21,7 @@ const DEFAULT_PASSWORD = 'ARM2024@Mali';
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkAuth = async () => {
     try {
@@ -55,8 +55,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('❌ Erreur lors de la vérification de l\'authentification:', error);
       setIsAdmin(false);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -122,9 +120,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  // CONNEXION AUTOMATIQUE SUPPRIMÉE
+  // La fonction checkAuth n'est plus appelée automatiquement au démarrage
+  // L'utilisateur doit maintenant se connecter manuellement à chaque fois
 
   return (
     <AdminContext.Provider 
