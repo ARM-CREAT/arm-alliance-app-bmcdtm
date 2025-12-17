@@ -35,6 +35,8 @@ export default function AdminLoginScreen() {
 
   const handleLogin = async () => {
     console.log('🔐 Login button pressed');
+    console.log('📝 Username:', username);
+    console.log('📝 Password length:', password.length);
     
     if (!username || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
@@ -49,7 +51,10 @@ export default function AdminLoginScreen() {
       console.log('📊 Login result:', success);
 
       if (success) {
-        console.log('✅ Login successful!');
+        console.log('✅ Login successful! Redirecting...');
+        // Clear form
+        setUsername('');
+        setPassword('');
         // Wait a bit for state to update
         setTimeout(() => {
           router.replace('/(tabs)/admin-dashboard');
@@ -61,15 +66,22 @@ export default function AdminLoginScreen() {
           'Nom d\'utilisateur ou mot de passe incorrect.\n\n' +
           'Identifiants par défaut:\n' +
           'Username: admin\n' +
-          'Password: ARM2024@Mali'
+          'Password: ARM2024@Mali\n\n' +
+          'Veuillez vérifier que vous avez saisi les identifiants correctement (respectez les majuscules et minuscules).'
         );
       }
     } catch (error) {
       console.error('❌ Login error:', error);
-      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
+      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillDefaultCredentials = () => {
+    setUsername('admin');
+    setPassword('ARM2024@Mali');
+    Alert.alert('✅ Succès', 'Les identifiants par défaut ont été remplis. Appuyez sur "Se connecter".');
   };
 
   // Show loading while checking auth
@@ -123,8 +135,21 @@ export default function AdminLoginScreen() {
             <Text style={styles.credentialLabel}>Mot de passe:</Text>
             <Text style={styles.credentialValue}>ARM2024@Mali</Text>
           </View>
+          <TouchableOpacity
+            style={styles.fillButton}
+            onPress={fillDefaultCredentials}
+            disabled={loading}
+          >
+            <IconSymbol
+              android_material_icon_name="content-copy"
+              ios_icon_name="doc.on.doc"
+              size={16}
+              color={colors.white}
+            />
+            <Text style={styles.fillButtonText}>Remplir automatiquement</Text>
+          </TouchableOpacity>
           <Text style={styles.credentialsNote}>
-            Utilisez ces identifiants pour vous connecter
+            ⚠️ Respectez les majuscules et minuscules
           </Text>
         </View>
 
@@ -227,7 +252,14 @@ export default function AdminLoginScreen() {
             color={colors.success}
           />
           <Text style={styles.securityText}>
-            Vos identifiants sont stockés de manière sécurisée et chiffrée sur votre appareil
+            Vos identifiants sont stockés de manière sécurisée et chiffrée sur votre appareil avec expo-crypto (SHA-256)
+          </Text>
+        </View>
+
+        <View style={styles.debugInfo}>
+          <Text style={styles.debugTitle}>🔧 Informations de débogage</Text>
+          <Text style={styles.debugText}>
+            Si la connexion ne fonctionne pas, vérifiez les logs dans la console pour plus de détails.
           </Text>
         </View>
       </ScrollView>
@@ -317,12 +349,29 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
+  fillButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  fillButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.white,
+    marginLeft: 8,
+  },
   credentialsNote: {
     fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 8,
-    fontStyle: 'italic',
+    color: colors.error,
+    fontWeight: '600',
     lineHeight: 16,
+    textAlign: 'center',
   },
   form: {
     width: '100%',
@@ -384,5 +433,24 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginLeft: 12,
     lineHeight: 18,
+  },
+  debugInfo: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  debugTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  debugText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    lineHeight: 16,
   },
 });

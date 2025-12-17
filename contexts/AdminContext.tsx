@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import * as Crypto from 'expo-crypto';
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -22,19 +23,19 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 heures
 const DEFAULT_USERNAME = 'admin';
 const DEFAULT_PASSWORD = 'ARM2024@Mali';
 
-// Simple hash function for password
-const hashPassword = (password: string): string => {
-  let hash = 0;
-  const salt = 'ARM_SECURE_SALT_2024_MALI';
-  const combined = password + salt;
-  
-  for (let i = 0; i < combined.length; i++) {
-    const char = combined.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+// Hash password using expo-crypto
+const hashPassword = async (password: string): Promise<string> => {
+  try {
+    const hash = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA256,
+      password
+    );
+    console.log('🔐 Password hashed successfully');
+    return hash;
+  } catch (error) {
+    console.error('❌ Error hashing password:', error);
+    throw error;
   }
-  
-  return Math.abs(hash).toString(36);
 };
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
@@ -45,24 +46,24 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('🔧 Initializing default admin credentials...');
       
-      const existingUsername = await SecureStore.getItemAsync(ADMIN_USERNAME_KEY);
+      // Always reset credentials to ensure they are correct
+      const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
       
-      if (!existingUsername) {
-        console.log('📝 No credentials found, setting up defaults...');
-        const hashedPassword = hashPassword(DEFAULT_PASSWORD);
-        
-        await SecureStore.setItemAsync(ADMIN_USERNAME_KEY, DEFAULT_USERNAME);
-        await SecureStore.setItemAsync(ADMIN_PASSWORD_KEY, hashedPassword);
-        
-        console.log('✅ Default credentials set successfully');
-        console.log('👤 Username:', DEFAULT_USERNAME);
-        console.log('🔑 Password:', DEFAULT_PASSWORD);
-        
-        return true;
-      } else {
-        console.log('✅ Credentials already exist');
-        return true;
-      }
+      await SecureStore.setItemAsync(ADMIN_USERNAME_KEY, DEFAULT_USERNAME);
+      await SecureStore.setItemAsync(ADMIN_PASSWORD_KEY, hashedPassword);
+      
+      console.log('✅ Default credentials set successfully');
+      console.log('👤 Username:', DEFAULT_USERNAME);
+      console.log('🔑 Password:', DEFAULT_PASSWORD);
+      
+      // Verify credentials were saved
+      const savedUsername = await SecureStore.getItemAsync(ADMIN_USERNAME_KEY);
+      const savedPassword = await SecureStore.getItemAsync(ADMIN_PASSWORD_KEY);
+      
+      console.log('✅ Verification - Username saved:', savedUsername === DEFAULT_USERNAME);
+      console.log('✅ Verification - Password hash saved:', !!savedPassword);
+      
+      return true;
     } catch (error) {
       console.error('❌ Error initializing credentials:', error);
       return false;
@@ -73,7 +74,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('🔍 Checking admin authentication...');
       
-      // Initialize default credentials if needed
+      // Initialize default credentials
       await initializeDefaultCredentials();
       
       // Check session
@@ -114,26 +115,80 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('🔐 Attempting admin login...');
       console.log('👤 Username provided:', username);
+      console.log('🔑 Password length:', password.length);
+      
+      // Trim inputs
+      const trimmedUsername = username.trim();
+      const trimmedPassword = password.trim();
+      
+      console.log('✂️ After trimming - Username:', trimmedUsername);
+      console.log('✂️ After trimming - Password length:', trimmedPassword.length);
       
       // Get stored credentials
       const storedUsername = await SecureStore.getItemAsync(ADMIN_USERNAME_KEY);
-      const storedPassword = await SecureStore.getItemAsync(ADMIN_PASSWORD_KEY);
+      const storedPasswordHash = await SecureStore.getItemAsync(ADMIN_PASSWORD_KEY);
       
-      if (!storedUsername || !storedPassword) {
-        console.log('❌ No credentials configured in storage');
+      console.log('📦 Stored username:', storedUsername);
+      console.log('📦 Stored password hash exists:', !!storedPasswordHash);
+      
+      if (!storedUsername || !storedPasswordHash) {
+        console.log('❌ No credentials found in storage');
+        console.log('🔄 Reinitializing credentials...');
+        await initializeDefaultCredentials();
+        
+        // Try again after initialization
+        const newStoredUsername = await SecureStore.getItemAsync(ADMIN_USERNAME_KEY);
+        const newStoredPasswordHash = await SecureStore.getItemAsync(ADMIN_PASSWORD_KEY);
+        
+        if (!newStoredUsername || !newStoredPasswordHash) {
+          console.log('❌ Failed to initialize credentials');
+          return false;
+        }
+        
+        // Hash the provided password
+        const hashedPassword = await hashPassword(trimmedPassword);
+        
+        console.log('🔍 Comparing credentials (after init)...');
+        console.log('  - Stored username:', newStoredUsername);
+        console.log('  - Provided username:', trimmedUsername);
+        console.log('  - Username match:', trimmedUsername === newStoredUsername);
+        console.log('  - Password hash match:', hashedPassword === newStoredPasswordHash);
+        
+        if (trimmedUsername === newStoredUsername && hashedPassword === newStoredPasswordHash) {
+          // Create session
+          const expiry = Date.now() + SESSION_DURATION;
+          const sessionData = {
+            username: trimmedUsername,
+            expiry,
+            loginTime: Date.now(),
+          };
+          
+          console.log('💾 Saving session...');
+          await AsyncStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(sessionData));
+          
+          // Verify the session was saved
+          const savedSession = await AsyncStorage.getItem(ADMIN_SESSION_KEY);
+          console.log('✅ Session saved successfully:', savedSession !== null);
+          
+          setIsAdmin(true);
+          console.log('✅ Admin login successful!');
+          return true;
+        }
+        
+        console.log('❌ Admin login failed: Invalid credentials');
         return false;
       }
 
-      const hashedPassword = hashPassword(password);
-      const trimmedUsername = username.trim();
+      // Hash the provided password
+      const hashedPassword = await hashPassword(trimmedPassword);
       
       console.log('🔍 Comparing credentials...');
       console.log('  - Stored username:', storedUsername);
       console.log('  - Provided username:', trimmedUsername);
       console.log('  - Username match:', trimmedUsername === storedUsername);
-      console.log('  - Password match:', hashedPassword === storedPassword);
+      console.log('  - Password hash match:', hashedPassword === storedPasswordHash);
       
-      if (trimmedUsername === storedUsername && hashedPassword === storedPassword) {
+      if (trimmedUsername === storedUsername && hashedPassword === storedPasswordHash) {
         // Create session
         const expiry = Date.now() + SESSION_DURATION;
         const sessionData = {
@@ -147,7 +202,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         
         // Verify the session was saved
         const savedSession = await AsyncStorage.getItem(ADMIN_SESSION_KEY);
-        console.log('✅ Session saved:', savedSession !== null);
+        console.log('✅ Session saved successfully:', savedSession !== null);
         
         setIsAdmin(true);
         console.log('✅ Admin login successful!');
