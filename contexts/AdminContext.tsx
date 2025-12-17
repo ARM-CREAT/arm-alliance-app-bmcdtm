@@ -6,13 +6,9 @@ import * as SecureStore from 'expo-secure-store';
 interface AdminContextType {
   isAdmin: boolean;
   isLoading: boolean;
-  hasPassword: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
-  setupPassword: (username: string, password: string) => Promise<boolean>;
-  changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>;
-  resetToDefault: () => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -44,7 +40,6 @@ const hashPassword = (password: string): string => {
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasPassword, setHasPassword] = useState(false);
 
   const initializeDefaultCredentials = async () => {
     try {
@@ -63,11 +58,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         console.log('👤 Username:', DEFAULT_USERNAME);
         console.log('🔑 Password:', DEFAULT_PASSWORD);
         
-        setHasPassword(true);
         return true;
       } else {
         console.log('✅ Credentials already exist');
-        setHasPassword(true);
         return true;
       }
     } catch (error) {
@@ -114,36 +107,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       setIsAdmin(false);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const setupPassword = async (username: string, password: string): Promise<boolean> => {
-    try {
-      console.log('🔧 Setting up new admin password...');
-      
-      if (!username || !password) {
-        console.log('❌ Username or password missing');
-        return false;
-      }
-
-      if (password.length < 8) {
-        console.log('❌ Password too short (minimum 8 characters)');
-        return false;
-      }
-
-      const hashedPassword = hashPassword(password);
-      
-      await SecureStore.setItemAsync(ADMIN_USERNAME_KEY, username.trim());
-      await SecureStore.setItemAsync(ADMIN_PASSWORD_KEY, hashedPassword);
-      
-      setHasPassword(true);
-      console.log('✅ Admin password configured successfully');
-      console.log('👤 New username:', username.trim());
-      
-      return true;
-    } catch (error) {
-      console.error('❌ Error setting up password:', error);
-      return false;
     }
   };
 
@@ -199,64 +162,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const changePassword = async (oldPassword: string, newPassword: string): Promise<boolean> => {
-    try {
-      console.log('🔄 Attempting to change password...');
-      
-      const storedUsername = await SecureStore.getItemAsync(ADMIN_USERNAME_KEY);
-      const storedPassword = await SecureStore.getItemAsync(ADMIN_PASSWORD_KEY);
-      
-      if (!storedUsername || !storedPassword) {
-        console.log('❌ No credentials configured');
-        return false;
-      }
-
-      const hashedOldPassword = hashPassword(oldPassword);
-      
-      // Verify old password
-      if (hashedOldPassword !== storedPassword) {
-        console.log('❌ Old password incorrect');
-        return false;
-      }
-
-      if (newPassword.length < 8) {
-        console.log('❌ New password too short');
-        return false;
-      }
-
-      // Save new password
-      const hashedNewPassword = hashPassword(newPassword);
-      await SecureStore.setItemAsync(ADMIN_PASSWORD_KEY, hashedNewPassword);
-      
-      console.log('✅ Password changed successfully');
-      return true;
-    } catch (error) {
-      console.error('❌ Error changing password:', error);
-      return false;
-    }
-  };
-
-  const resetToDefault = async () => {
-    try {
-      console.log('🔄 Resetting to default credentials...');
-      
-      const hashedPassword = hashPassword(DEFAULT_PASSWORD);
-      
-      await SecureStore.setItemAsync(ADMIN_USERNAME_KEY, DEFAULT_USERNAME);
-      await SecureStore.setItemAsync(ADMIN_PASSWORD_KEY, hashedPassword);
-      await AsyncStorage.removeItem(ADMIN_SESSION_KEY);
-      
-      setIsAdmin(false);
-      setHasPassword(true);
-      
-      console.log('✅ Reset to default credentials');
-      console.log('👤 Username:', DEFAULT_USERNAME);
-      console.log('🔑 Password:', DEFAULT_PASSWORD);
-    } catch (error) {
-      console.error('❌ Error resetting credentials:', error);
-    }
-  };
-
   const logout = async () => {
     try {
       console.log('🚪 Logging out admin...');
@@ -277,13 +182,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       value={{ 
         isAdmin, 
         isLoading, 
-        hasPassword, 
         login, 
         logout, 
-        checkAuth, 
-        setupPassword,
-        changePassword,
-        resetToDefault,
+        checkAuth,
       }}
     >
       {children}

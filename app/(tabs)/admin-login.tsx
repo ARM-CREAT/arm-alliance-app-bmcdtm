@@ -22,7 +22,7 @@ export default function AdminLoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, isAdmin, isLoading, resetToDefault } = useAdmin();
+  const { login, isAdmin, isLoading } = useAdmin();
   const router = useRouter();
 
   // Redirect if already logged in
@@ -49,25 +49,19 @@ export default function AdminLoginScreen() {
       console.log('📊 Login result:', success);
 
       if (success) {
-        console.log('✅ Login successful, showing alert...');
-        Alert.alert(
-          'Succès', 
-          'Connexion réussie !', 
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('🔄 Navigating to admin dashboard...');
-                router.replace('/(tabs)/admin-dashboard');
-              },
-            },
-          ]
-        );
+        console.log('✅ Login successful!');
+        // Wait a bit for state to update
+        setTimeout(() => {
+          router.replace('/(tabs)/admin-dashboard');
+        }, 100);
       } else {
-        console.log('❌ Login failed, showing error...');
+        console.log('❌ Login failed');
         Alert.alert(
-          'Erreur', 
-          'Nom d\'utilisateur ou mot de passe incorrect.\n\nIdentifiants par défaut:\nUsername: admin\nPassword: ARM2024@Mali'
+          'Erreur de connexion', 
+          'Nom d\'utilisateur ou mot de passe incorrect.\n\n' +
+          'Identifiants par défaut:\n' +
+          'Username: admin\n' +
+          'Password: ARM2024@Mali'
         );
       }
     } catch (error) {
@@ -76,30 +70,6 @@ export default function AdminLoginScreen() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleResetCredentials = () => {
-    Alert.alert(
-      'Réinitialiser les identifiants',
-      'Voulez-vous réinitialiser les identifiants aux valeurs par défaut ?\n\nUsername: admin\nPassword: ARM2024@Mali',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Réinitialiser',
-          style: 'destructive',
-          onPress: async () => {
-            await resetToDefault();
-            Alert.alert(
-              'Succès',
-              'Identifiants réinitialisés !\n\nUsername: admin\nPassword: ARM2024@Mali'
-            );
-          },
-        },
-      ]
-    );
   };
 
   // Show loading while checking auth
@@ -154,7 +124,7 @@ export default function AdminLoginScreen() {
             <Text style={styles.credentialValue}>ARM2024@Mali</Text>
           </View>
           <Text style={styles.credentialsNote}>
-            Vous pouvez changer ces identifiants après la connexion
+            Utilisez ces identifiants pour vous connecter
           </Text>
         </View>
 
@@ -238,22 +208,6 @@ export default function AdminLoginScreen() {
                 </Text>
               </>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[buttonStyles.outline, styles.resetButton]}
-            onPress={handleResetCredentials}
-            disabled={loading}
-          >
-            <IconSymbol
-              android_material_icon_name="refresh"
-              ios_icon_name="arrow.clockwise"
-              size={18}
-              color={colors.primary}
-            />
-            <Text style={[buttonStyles.textOutline, styles.resetButtonText]}>
-              Réinitialiser les identifiants
-            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -405,15 +359,6 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
-  },
-  resetButton: {
-    marginTop: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resetButtonText: {
-    marginLeft: 8,
   },
   backButton: {
     marginTop: 16,
