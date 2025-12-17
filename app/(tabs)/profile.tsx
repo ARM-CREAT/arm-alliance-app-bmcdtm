@@ -1,91 +1,231 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { IconSymbol } from "@/components/IconSymbol";
-import { GlassView } from "expo-glass-effect";
-import { useTheme } from "@react-navigation/native";
+
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { colors, commonStyles } from '@/styles/commonStyles';
+import { members, partyInfo } from '@/data/partyData';
+import { useRouter } from 'expo-router';
+import { IconSymbol } from '@/components/IconSymbol';
 
 export default function ProfileScreen() {
-  const theme = useTheme();
+  const router = useRouter();
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top']}>
+    <View style={commonStyles.container}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.contentContainer,
-          Platform.OS !== 'ios' && styles.contentContainerWithTabBar
-        ]}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <GlassView style={[
-          styles.profileHeader,
-          Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }
-        ]} glassEffectStyle="regular">
-          <IconSymbol ios_icon_name="person.circle.fill" android_material_icon_name="person" size={80} color={theme.colors.primary} />
-          <Text style={[styles.name, { color: theme.colors.text }]}>John Doe</Text>
-          <Text style={[styles.email, { color: theme.dark ? '#98989D' : '#666' }]}>john.doe@example.com</Text>
-        </GlassView>
+        <View style={styles.header}>
+          <Image
+            source={{ uri: partyInfo.logoUrl }}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Menu Principal</Text>
+        </View>
 
-        <GlassView style={[
-          styles.section,
-          Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }
-        ]} glassEffectStyle="regular">
-          <View style={styles.infoRow}>
-            <IconSymbol ios_icon_name="phone.fill" android_material_icon_name="phone" size={20} color={theme.dark ? '#98989D' : '#666'} />
-            <Text style={[styles.infoText, { color: theme.colors.text }]}>+1 (555) 123-4567</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <IconSymbol ios_icon_name="location.fill" android_material_icon_name="location-on" size={20} color={theme.dark ? '#98989D' : '#666'} />
-            <Text style={[styles.infoText, { color: theme.colors.text }]}>San Francisco, CA</Text>
-          </View>
-        </GlassView>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Navigation</Text>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/(home)/')}
+          >
+            <IconSymbol
+              android_material_icon_name="home"
+              ios_icon_name="house"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Accueil</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/members')}
+          >
+            <IconSymbol
+              android_material_icon_name="groups"
+              ios_icon_name="person.3"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Membres du Bureau</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/programs')}
+          >
+            <IconSymbol
+              android_material_icon_name="description"
+              ios_icon_name="doc.text"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Nos Programmes</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/regions')}
+          >
+            <IconSymbol
+              android_material_icon_name="map"
+              ios_icon_name="map"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Régions du Mali</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/donation')}
+          >
+            <IconSymbol
+              android_material_icon_name="volunteer-activism"
+              ios_icon_name="heart.circle"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Faire un Don</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/(tabs)/contact')}
+          >
+            <IconSymbol
+              android_material_icon_name="contact-mail"
+              ios_icon_name="envelope"
+              size={24}
+              color={colors.primary}
+            />
+            <Text style={styles.menuText}>Contact</Text>
+            <IconSymbol
+              android_material_icon_name="chevron-right"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>{partyInfo.motto}</Text>
+          <Text style={styles.infoText}>{partyInfo.fullName}</Text>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    // backgroundColor handled dynamically
-  },
-  container: {
+  scrollView: {
     flex: 1,
   },
-  contentContainer: {
-    padding: 20,
+  scrollContent: {
+    paddingTop: 48,
+    paddingBottom: 120,
+    paddingHorizontal: 20,
   },
-  contentContainerWithTabBar: {
-    paddingBottom: 100, // Extra padding for floating tab bar
-  },
-  profileHeader: {
+  header: {
     alignItems: 'center',
-    borderRadius: 12,
-    padding: 32,
+    marginBottom: 32,
+  },
+  logo: {
+    width: 100,
+    height: 100,
     marginBottom: 16,
-    gap: 12,
+    borderRadius: 50,
   },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    // color handled dynamically
-  },
-  email: {
-    fontSize: 16,
-    // color handled dynamically
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: colors.text,
+    textAlign: 'center',
   },
   section: {
-    borderRadius: 12,
-    padding: 20,
-    gap: 12,
+    marginBottom: 24,
   },
-  infoRow: {
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 16,
+  },
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    elevation: 2,
+  },
+  menuText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginLeft: 12,
+  },
+  infoCard: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  infoTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.white,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   infoText: {
-    fontSize: 16,
-    // color handled dynamically
+    fontSize: 14,
+    color: colors.white,
+    textAlign: 'center',
   },
 });
