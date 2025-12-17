@@ -20,7 +20,6 @@ import { IconSymbol } from '@/components/IconSymbol';
 export default function AdminLoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login, isAdmin, isLoading } = useAdmin();
   const router = useRouter();
@@ -64,10 +63,8 @@ export default function AdminLoginScreen() {
         Alert.alert(
           'Erreur de connexion', 
           'Nom d\'utilisateur ou mot de passe incorrect.\n\n' +
-          'Identifiants par défaut:\n' +
-          'Nom d\'utilisateur: admin\n' +
-          'Mot de passe: ARM2024@Mali\n\n' +
-          'Veuillez vérifier que vous avez saisi les identifiants correctement (respectez les majuscules et minuscules).'
+          'Veuillez vérifier vos identifiants et réessayer.\n' +
+          '(Respectez les majuscules et minuscules)'
         );
       }
     } catch (error) {
@@ -125,7 +122,7 @@ export default function AdminLoginScreen() {
               size={24}
               color={colors.primary}
             />
-            <Text style={styles.credentialsTitle}>Identifiants par défaut</Text>
+            <Text style={styles.credentialsTitle}>Informations de connexion</Text>
           </View>
           <View style={styles.credentialRow}>
             <Text style={styles.credentialLabel}>Nom d&apos;utilisateur:</Text>
@@ -133,7 +130,7 @@ export default function AdminLoginScreen() {
           </View>
           <View style={styles.credentialRow}>
             <Text style={styles.credentialLabel}>Mot de passe:</Text>
-            <Text style={styles.credentialValue}>ARM2024@Mali</Text>
+            <Text style={styles.credentialValue}>••••••••••••</Text>
           </View>
           <TouchableOpacity
             style={styles.fillButton}
@@ -149,7 +146,7 @@ export default function AdminLoginScreen() {
             <Text style={styles.fillButtonText}>Remplir automatiquement</Text>
           </TouchableOpacity>
           <Text style={styles.credentialsNote}>
-            ⚠️ Respectez les majuscules et minuscules
+            🔒 Le mot de passe est confidentiel et réservé à l&apos;administrateur uniquement
           </Text>
         </View>
 
@@ -192,24 +189,19 @@ export default function AdminLoginScreen() {
                 placeholderTextColor={colors.textSecondary}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry={!showPassword}
+                secureTextEntry={true}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loading}
                 returnKeyType="done"
                 onSubmitEditing={handleLogin}
               />
-              <TouchableOpacity 
-                onPress={() => setShowPassword(!showPassword)}
-                disabled={loading}
-              >
-                <IconSymbol
-                  android_material_icon_name={showPassword ? 'visibility-off' : 'visibility'}
-                  ios_icon_name={showPassword ? 'eye.slash' : 'eye'}
-                  size={20}
-                  color={colors.textSecondary}
-                />
-              </TouchableOpacity>
+              <IconSymbol
+                android_material_icon_name="lock"
+                ios_icon_name="lock.fill"
+                size={20}
+                color={colors.success}
+              />
             </View>
           </View>
 
@@ -252,15 +244,15 @@ export default function AdminLoginScreen() {
             color={colors.success}
           />
           <Text style={styles.securityText}>
-            Connexion simplifiée et sécurisée. Votre session est stockée localement sur votre appareil.
+            🔐 Connexion sécurisée. Le mot de passe est masqué et protégé. Seul l&apos;administrateur autorisé peut accéder à cet espace.
           </Text>
         </View>
 
         <View style={styles.successInfo}>
-          <Text style={styles.successTitle}>✅ Système de connexion simplifié</Text>
+          <Text style={styles.successTitle}>✅ Système de connexion sécurisé</Text>
           <Text style={styles.successText}>
-            Le système d&apos;authentification a été simplifié pour garantir une connexion fiable. 
-            Utilisez les identifiants affichés ci-dessus pour vous connecter.
+            Le mot de passe est toujours masqué pour garantir la sécurité. 
+            Seul l&apos;administrateur connaît les identifiants de connexion.
           </Text>
         </View>
 
@@ -268,7 +260,7 @@ export default function AdminLoginScreen() {
           <Text style={styles.debugTitle}>🔧 Informations de débogage</Text>
           <Text style={styles.debugText}>
             Si la connexion ne fonctionne pas, vérifiez les logs dans la console pour plus de détails.
-            Les identifiants sont: admin / ARM2024@Mali (sensible à la casse).
+            Les identifiants sont sensibles à la casse (majuscules/minuscules).
           </Text>
         </View>
       </ScrollView>
@@ -377,7 +369,7 @@ const styles = StyleSheet.create({
   },
   credentialsNote: {
     fontSize: 12,
-    color: colors.error,
+    color: colors.success,
     fontWeight: '600',
     lineHeight: 16,
     textAlign: 'center',
