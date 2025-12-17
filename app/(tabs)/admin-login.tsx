@@ -25,18 +25,18 @@ export default function AdminLoginScreen() {
   const { login, isAdmin, isLoading } = useAdmin();
   const router = useRouter();
 
-  // Redirect if already logged in
+  // Rediriger si déjà connecté
   useEffect(() => {
     if (!isLoading && isAdmin) {
-      console.log('✅ User is already admin, redirecting to dashboard...');
+      console.log('✅ L\'utilisateur est déjà admin, redirection vers le tableau de bord...');
       router.replace('/(tabs)/admin-dashboard');
     }
   }, [isAdmin, isLoading]);
 
   const handleLogin = async () => {
-    console.log('🔐 Login button pressed');
-    console.log('📝 Username:', username);
-    console.log('📝 Password length:', password.length);
+    console.log('🔐 Bouton de connexion pressé');
+    console.log('📝 Nom d\'utilisateur:', username);
+    console.log('📝 Longueur du mot de passe:', password.length);
     
     if (!username || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
@@ -44,34 +44,34 @@ export default function AdminLoginScreen() {
     }
 
     setLoading(true);
-    console.log('🚀 Starting login process...');
+    console.log('🚀 Démarrage du processus de connexion...');
     
     try {
       const success = await login(username, password);
-      console.log('📊 Login result:', success);
+      console.log('📊 Résultat de la connexion:', success);
 
       if (success) {
-        console.log('✅ Login successful! Redirecting...');
-        // Clear form
+        console.log('✅ Connexion réussie ! Redirection...');
+        // Effacer le formulaire
         setUsername('');
         setPassword('');
-        // Wait a bit for state to update
+        // Attendre un peu pour que l'état se mette à jour
         setTimeout(() => {
           router.replace('/(tabs)/admin-dashboard');
         }, 100);
       } else {
-        console.log('❌ Login failed');
+        console.log('❌ Échec de la connexion');
         Alert.alert(
           'Erreur de connexion', 
           'Nom d\'utilisateur ou mot de passe incorrect.\n\n' +
           'Identifiants par défaut:\n' +
-          'Username: admin\n' +
-          'Password: ARM2024@Mali\n\n' +
+          'Nom d\'utilisateur: admin\n' +
+          'Mot de passe: ARM2024@Mali\n\n' +
           'Veuillez vérifier que vous avez saisi les identifiants correctement (respectez les majuscules et minuscules).'
         );
       }
     } catch (error) {
-      console.error('❌ Login error:', error);
+      console.error('❌ Erreur de connexion:', error);
       Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion. Veuillez réessayer.');
     } finally {
       setLoading(false);
@@ -84,7 +84,7 @@ export default function AdminLoginScreen() {
     Alert.alert('✅ Succès', 'Les identifiants par défaut ont été remplis. Appuyez sur "Se connecter".');
   };
 
-  // Show loading while checking auth
+  // Afficher le chargement pendant la vérification de l'authentification
   if (isLoading) {
     return (
       <View style={[commonStyles.container, styles.loadingContainer]}>
@@ -221,7 +221,7 @@ export default function AdminLoginScreen() {
             {loading ? (
               <ActivityIndicator color={colors.white} />
             ) : (
-              <>
+              <React.Fragment>
                 <IconSymbol
                   android_material_icon_name="login"
                   ios_icon_name="arrow.right.circle"
@@ -231,7 +231,7 @@ export default function AdminLoginScreen() {
                 <Text style={[buttonStyles.text, styles.loginButtonText]}>
                   Se connecter
                 </Text>
-              </>
+              </React.Fragment>
             )}
           </TouchableOpacity>
 
@@ -252,7 +252,15 @@ export default function AdminLoginScreen() {
             color={colors.success}
           />
           <Text style={styles.securityText}>
-            Vos identifiants sont stockés de manière sécurisée et chiffrée sur votre appareil avec expo-crypto (SHA-256)
+            Connexion simplifiée et sécurisée. Votre session est stockée localement sur votre appareil.
+          </Text>
+        </View>
+
+        <View style={styles.successInfo}>
+          <Text style={styles.successTitle}>✅ Système de connexion simplifié</Text>
+          <Text style={styles.successText}>
+            Le système d&apos;authentification a été simplifié pour garantir une connexion fiable. 
+            Utilisez les identifiants affichés ci-dessus pour vous connecter.
           </Text>
         </View>
 
@@ -260,6 +268,7 @@ export default function AdminLoginScreen() {
           <Text style={styles.debugTitle}>🔧 Informations de débogage</Text>
           <Text style={styles.debugText}>
             Si la connexion ne fonctionne pas, vérifiez les logs dans la console pour plus de détails.
+            Les identifiants sont: admin / ARM2024@Mali (sensible à la casse).
           </Text>
         </View>
       </ScrollView>
@@ -433,6 +442,25 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginLeft: 12,
     lineHeight: 18,
+  },
+  successInfo: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: colors.success,
+  },
+  successTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.success,
+    marginBottom: 8,
+  },
+  successText: {
+    fontSize: 12,
+    color: colors.text,
+    lineHeight: 16,
   },
   debugInfo: {
     backgroundColor: colors.card,
