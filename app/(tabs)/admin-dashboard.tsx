@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -14,14 +15,17 @@ import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
 
 export default function AdminDashboardScreen() {
-  const { isAdmin, logout } = useAdmin();
+  const { isAdmin, isLoading, logout } = useAdmin();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAdmin) {
+    console.log('AdminDashboard - isAdmin:', isAdmin, 'isLoading:', isLoading);
+    
+    if (!isLoading && !isAdmin) {
+      console.log('User is not admin, redirecting to login...');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, isLoading]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -36,7 +40,9 @@ export default function AdminDashboardScreen() {
           text: 'Déconnexion',
           style: 'destructive',
           onPress: async () => {
+            console.log('Logging out...');
             await logout();
+            console.log('Redirecting to home...');
             router.replace('/(tabs)/(home)/');
           },
         },
@@ -44,6 +50,17 @@ export default function AdminDashboardScreen() {
     );
   };
 
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <View style={[commonStyles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Chargement...</Text>
+      </View>
+    );
+  }
+
+  // Don't render if not admin
   if (!isAdmin) {
     return null;
   }
@@ -264,6 +281,15 @@ export default function AdminDashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.textSecondary,
+  },
   scrollView: {
     flex: 1,
   },
