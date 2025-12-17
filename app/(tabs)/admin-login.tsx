@@ -24,10 +24,6 @@ export default function AdminLoginScreen() {
   const { login } = useAdmin();
   const router = useRouter();
 
-  // REDIRECTION AUTOMATIQUE SUPPRIMÉE
-  // L'utilisateur doit maintenant se connecter manuellement à chaque fois
-  // Même s'il a une session active, il doit entrer ses identifiants
-
   const handleLogin = async () => {
     console.log('🔐 Bouton de connexion pressé');
     console.log('📝 Nom d\'utilisateur:', username);
@@ -47,10 +43,8 @@ export default function AdminLoginScreen() {
 
       if (success) {
         console.log('✅ Connexion réussie ! Redirection...');
-        // Effacer le formulaire
         setUsername('');
         setPassword('');
-        // Attendre un peu pour que l'état se mette à jour
         setTimeout(() => {
           router.replace('/(tabs)/admin-dashboard');
         }, 100);
@@ -69,12 +63,6 @@ export default function AdminLoginScreen() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillDefaultCredentials = () => {
-    setUsername('admin');
-    setPassword('ARM2024@Mali');
-    Alert.alert('✅ Succès', 'Les identifiants par défaut ont été remplis. Appuyez sur "Se connecter".');
   };
 
   return (
@@ -118,19 +106,6 @@ export default function AdminLoginScreen() {
             <Text style={styles.credentialLabel}>Mot de passe:</Text>
             <Text style={styles.credentialValue}>••••••••••••</Text>
           </View>
-          <TouchableOpacity
-            style={styles.fillButton}
-            onPress={fillDefaultCredentials}
-            disabled={loading}
-          >
-            <IconSymbol
-              android_material_icon_name="content-copy"
-              ios_icon_name="doc.on.doc"
-              size={16}
-              color={colors.white}
-            />
-            <Text style={styles.fillButtonText}>Remplir automatiquement</Text>
-          </TouchableOpacity>
           <Text style={styles.credentialsNote}>
             🔒 Le mot de passe est confidentiel et réservé à l&apos;administrateur uniquement
           </Text>
@@ -326,29 +301,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  fillButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  fillButtonText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.white,
-    marginLeft: 8,
-  },
   credentialsNote: {
     fontSize: 12,
     color: colors.success,
     fontWeight: '600',
     lineHeight: 16,
     textAlign: 'center',
+    marginTop: 8,
   },
   form: {
     width: '100%',

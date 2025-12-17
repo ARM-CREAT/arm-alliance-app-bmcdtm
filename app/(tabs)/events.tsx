@@ -11,6 +11,7 @@ import {
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { Event } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
+import { partyInfo } from '@/data/partyData';
 
 export default function EventsScreen() {
   const [events] = useState<Event[]>([
@@ -20,7 +21,7 @@ export default function EventsScreen() {
       description: 'Réunion annuelle de tous les membres du parti pour discuter des orientations stratégiques et élire les nouveaux responsables.',
       date: '2024-03-15',
       location: 'Bamako Sebenikoro, Siège du Parti',
-      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
     {
       id: '2',
@@ -28,7 +29,7 @@ export default function EventsScreen() {
       description: 'Discussion sur les réformes éducatives nécessaires pour améliorer le système scolaire malien.',
       date: '2024-04-20',
       location: 'Université de Bamako',
-      imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
     {
       id: '3',
@@ -36,7 +37,7 @@ export default function EventsScreen() {
       description: 'Campagne de sensibilisation sur l\'importance de la santé publique et de la prévention des maladies.',
       date: '2024-05-10',
       location: 'Plusieurs régions du Mali',
-      imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
   ]);
 
@@ -77,7 +78,7 @@ export default function EventsScreen() {
                   <Image
                     source={{ uri: event.imageUrl }}
                     style={styles.eventImage}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                 )}
                 <View style={styles.eventContent}>
@@ -165,6 +166,7 @@ const styles = StyleSheet.create({
   eventImage: {
     width: '100%',
     height: 180,
+    backgroundColor: colors.white,
   },
   eventContent: {
     padding: 16,

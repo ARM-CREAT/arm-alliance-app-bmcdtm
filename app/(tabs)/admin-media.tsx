@@ -14,7 +14,7 @@ import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
-import * as ImagePicker from 'expo-image-picker';
+import { partyInfo } from '@/data/partyData';
 
 interface MediaItem {
   id: string;
@@ -33,7 +33,6 @@ export default function AdminMediaScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (!isAdmin) {
@@ -41,31 +40,16 @@ export default function AdminMediaScreen() {
     }
   }, [isAdmin]);
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: mediaType === 'photo' 
-        ? ImagePicker.MediaTypeOptions.Images 
-        : ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setSelectedImage(result.assets[0].uri);
-    }
-  };
-
   const handleAddMedia = () => {
-    if (!title || !selectedImage) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs et sélectionner un média');
+    if (!title) {
+      Alert.alert('Erreur', 'Veuillez remplir le titre');
       return;
     }
 
     const newMedia: MediaItem = {
       id: Date.now().toString(),
       type: mediaType,
-      url: selectedImage,
+      url: partyInfo.logoUrl,
       title,
       description,
       date: new Date().toISOString(),
@@ -74,7 +58,6 @@ export default function AdminMediaScreen() {
     setMediaItems([newMedia, ...mediaItems]);
     setTitle('');
     setDescription('');
-    setSelectedImage(null);
     setShowAddForm(false);
     Alert.alert('Succès', 'Média ajouté avec succès');
   };
@@ -190,26 +173,10 @@ export default function AdminMediaScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.imagePickerButton}
-              onPress={pickImage}
-            >
-              {selectedImage ? (
-                <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-              ) : (
-                <View style={styles.imagePickerPlaceholder}>
-                  <IconSymbol
-                    android_material_icon_name="add-photo-alternate"
-                    ios_icon_name="photo.badge.plus"
-                    size={48}
-                    color={colors.textSecondary}
-                  />
-                  <Text style={styles.imagePickerText}>
-                    Sélectionner {mediaType === 'photo' ? 'une photo' : 'une vidéo'}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            <View style={styles.logoPreview}>
+              <Image source={{ uri: partyInfo.logoUrl }} style={styles.logoImage} resizeMode="contain" />
+              <Text style={styles.logoText}>Le logo du parti sera utilisé pour tous les médias</Text>
+            </View>
 
             <Text style={commonStyles.inputLabel}>Titre</Text>
             <TextInput
@@ -262,7 +229,7 @@ export default function AdminMediaScreen() {
                   <Image
                     source={{ uri: item.url }}
                     style={styles.mediaThumbnail}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                   <View style={styles.mediaContent}>
                     <View style={styles.mediaHeader}>
@@ -381,30 +348,23 @@ const styles = StyleSheet.create({
   typeButtonTextActive: {
     color: colors.white,
   },
-  imagePickerButton: {
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  imagePickerPlaceholder: {
+  logoPreview: {
     backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
     borderRadius: 12,
-    paddingVertical: 40,
+    padding: 20,
+    marginBottom: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  imagePickerText: {
-    fontSize: 14,
+  logoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 12,
+  },
+  logoText: {
+    fontSize: 13,
     color: colors.textSecondary,
-    marginTop: 12,
-  },
-  selectedImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 12,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   textArea: {
     height: 100,
@@ -442,7 +402,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 8,
-    backgroundColor: colors.border,
+    backgroundColor: colors.white,
   },
   mediaContent: {
     flex: 1,

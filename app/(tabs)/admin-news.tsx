@@ -14,7 +14,7 @@ import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
-import * as ImagePicker from 'expo-image-picker';
+import { partyInfo } from '@/data/partyData';
 
 interface NewsItem {
   id: string;
@@ -33,26 +33,12 @@ export default function AdminNewsScreen() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
   }, [isAdmin]);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setSelectedImage(result.assets[0].uri);
-    }
-  };
 
   const handleAddNews = () => {
     if (!title || !content || !author) {
@@ -66,14 +52,13 @@ export default function AdminNewsScreen() {
       content,
       author,
       date: new Date().toISOString(),
-      imageUrl: selectedImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c',
+      imageUrl: partyInfo.logoUrl,
     };
 
     setNewsItems([newNews, ...newsItems]);
     setTitle('');
     setContent('');
     setAuthor('');
-    setSelectedImage(null);
     setShowAddForm(false);
     Alert.alert('Succès', 'Actualité ajoutée avec succès');
   };
@@ -141,26 +126,10 @@ export default function AdminNewsScreen() {
           <View style={styles.formCard}>
             <Text style={styles.formTitle}>Nouvelle Actualité</Text>
 
-            <TouchableOpacity
-              style={styles.imagePickerButton}
-              onPress={pickImage}
-            >
-              {selectedImage ? (
-                <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-              ) : (
-                <View style={styles.imagePickerPlaceholder}>
-                  <IconSymbol
-                    android_material_icon_name="add-photo-alternate"
-                    ios_icon_name="photo.badge.plus"
-                    size={48}
-                    color={colors.textSecondary}
-                  />
-                  <Text style={styles.imagePickerText}>
-                    Ajouter une image
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            <View style={styles.logoPreview}>
+              <Image source={{ uri: partyInfo.logoUrl }} style={styles.logoImage} resizeMode="contain" />
+              <Text style={styles.logoText}>Le logo du parti sera utilisé pour toutes les actualités</Text>
+            </View>
 
             <Text style={commonStyles.inputLabel}>Titre *</Text>
             <TextInput
@@ -221,7 +190,7 @@ export default function AdminNewsScreen() {
                   <Image
                     source={{ uri: news.imageUrl }}
                     style={styles.newsImage}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                   <View style={styles.newsContent}>
                     <Text style={styles.newsTitle}>{news.title}</Text>
@@ -308,30 +277,23 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: 16,
   },
-  imagePickerButton: {
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  imagePickerPlaceholder: {
+  logoPreview: {
     backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
     borderRadius: 12,
-    paddingVertical: 40,
+    padding: 20,
+    marginBottom: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  imagePickerText: {
-    fontSize: 14,
+  logoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 12,
+  },
+  logoText: {
+    fontSize: 13,
     color: colors.textSecondary,
-    marginTop: 12,
-  },
-  selectedImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 12,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   textArea: {
     height: 120,
@@ -367,7 +329,7 @@ const styles = StyleSheet.create({
   newsImage: {
     width: '100%',
     height: 180,
-    backgroundColor: colors.border,
+    backgroundColor: colors.white,
   },
   newsContent: {
     padding: 16,

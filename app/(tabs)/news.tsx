@@ -11,6 +11,7 @@ import {
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { NewsItem } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
+import { partyInfo } from '@/data/partyData';
 
 export default function NewsScreen() {
   const [news] = useState<NewsItem[]>([
@@ -20,7 +21,7 @@ export default function NewsScreen() {
       content: 'L\'Alliance pour le Rassemblement Malien a été officiellement lancée lors d\'une cérémonie à Bamako. Le président Lassine Diakité a présenté la vision du parti pour un Mali uni et prospère.',
       date: '2024-01-15',
       author: 'Équipe A.R.M',
-      imageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
     {
       id: '2',
@@ -28,7 +29,7 @@ export default function NewsScreen() {
       content: 'L\'A.R.M annonce un programme ambitieux pour le développement des zones rurales, incluant l\'amélioration des infrastructures agricoles et l\'accès à l\'eau potable.',
       date: '2024-02-01',
       author: 'Équipe A.R.M',
-      imageUrl: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
     {
       id: '3',
@@ -36,7 +37,7 @@ export default function NewsScreen() {
       content: 'Le premier vice-président Dadou Sangare a rencontré la diaspora malienne en Europe pour discuter de leur rôle dans le développement du pays.',
       date: '2024-02-20',
       author: 'Équipe A.R.M',
-      imageUrl: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800',
+      imageUrl: partyInfo.logoUrl,
     },
   ]);
 
@@ -77,7 +78,7 @@ export default function NewsScreen() {
                   <Image
                     source={{ uri: item.imageUrl }}
                     style={styles.newsImage}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                 )}
                 <View style={styles.newsContent}>
@@ -157,6 +158,7 @@ const styles = StyleSheet.create({
   newsImage: {
     width: '100%',
     height: 180,
+    backgroundColor: colors.white,
   },
   newsContent: {
     padding: 16,
