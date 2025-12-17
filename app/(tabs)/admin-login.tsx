@@ -20,74 +20,21 @@ import { IconSymbol } from '@/components/IconSymbol';
 export default function AdminLoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, isAdmin, isLoading, hasPassword, setupPassword } = useAdmin();
+  const { login, isAdmin, isLoading, resetToDefault } = useAdmin();
   const router = useRouter();
-  const isSetupMode = !hasPassword;
 
   // Redirect if already logged in
   useEffect(() => {
     if (!isLoading && isAdmin) {
-      console.log('User is already admin, redirecting to dashboard...');
+      console.log('✅ User is already admin, redirecting to dashboard...');
       router.replace('/(tabs)/admin-dashboard');
     }
   }, [isAdmin, isLoading]);
 
-  const handleSetup = async () => {
-    console.log('Setup button pressed');
-    
-    if (!username || !password || !confirmPassword) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
-      return;
-    }
-
-    if (password.length < 8) {
-      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 8 caractères');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
-      return;
-    }
-
-    setLoading(true);
-    console.log('Starting password setup...');
-    
-    try {
-      const success = await setupPassword(username, password);
-      console.log('Setup result:', success);
-
-      if (success) {
-        Alert.alert(
-          'Succès', 
-          'Mot de passe administrateur configuré avec succès. Vous pouvez maintenant vous connecter.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                setPassword('');
-                setConfirmPassword('');
-              },
-            },
-          ]
-        );
-      } else {
-        Alert.alert('Erreur', 'Impossible de configurer le mot de passe');
-      }
-    } catch (error) {
-      console.error('Setup error:', error);
-      Alert.alert('Erreur', 'Une erreur est survenue lors de la configuration');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogin = async () => {
-    console.log('Login button pressed');
+    console.log('🔐 Login button pressed');
     
     if (!username || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
@@ -95,37 +42,64 @@ export default function AdminLoginScreen() {
     }
 
     setLoading(true);
-    console.log('Starting login process...');
+    console.log('🚀 Starting login process...');
     
     try {
       const success = await login(username, password);
-      console.log('Login result:', success);
+      console.log('📊 Login result:', success);
 
       if (success) {
-        console.log('Login successful, showing alert...');
+        console.log('✅ Login successful, showing alert...');
         Alert.alert(
           'Succès', 
-          'Connexion réussie', 
+          'Connexion réussie !', 
           [
             {
               text: 'OK',
               onPress: () => {
-                console.log('Navigating to admin dashboard...');
+                console.log('🔄 Navigating to admin dashboard...');
                 router.replace('/(tabs)/admin-dashboard');
               },
             },
           ]
         );
       } else {
-        console.log('Login failed, showing error...');
-        Alert.alert('Erreur', 'Nom d\'utilisateur ou mot de passe incorrect');
+        console.log('❌ Login failed, showing error...');
+        Alert.alert(
+          'Erreur', 
+          'Nom d\'utilisateur ou mot de passe incorrect.\n\nIdentifiants par défaut:\nUsername: admin\nPassword: ARM2024@Mali'
+        );
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetCredentials = () => {
+    Alert.alert(
+      'Réinitialiser les identifiants',
+      'Voulez-vous réinitialiser les identifiants aux valeurs par défaut ?\n\nUsername: admin\nPassword: ARM2024@Mali',
+      [
+        {
+          text: 'Annuler',
+          style: 'cancel',
+        },
+        {
+          text: 'Réinitialiser',
+          style: 'destructive',
+          onPress: async () => {
+            await resetToDefault();
+            Alert.alert(
+              'Succès',
+              'Identifiants réinitialisés !\n\nUsername: admin\nPassword: ARM2024@Mali'
+            );
+          },
+        },
+      ]
+    );
   };
 
   // Show loading while checking auth
@@ -157,30 +131,32 @@ export default function AdminLoginScreen() {
               color={colors.primary}
             />
           </View>
-          <Text style={styles.title}>
-            {isSetupMode ? 'Configuration Administrateur' : 'Espace Administrateur'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {isSetupMode 
-              ? 'Créez votre mot de passe sécurisé' 
-              : 'Connexion sécurisée'}
-          </Text>
+          <Text style={styles.title}>Espace Administrateur</Text>
+          <Text style={styles.subtitle}>Connexion sécurisée</Text>
         </View>
 
-        {isSetupMode && (
-          <View style={styles.setupInfo}>
+        <View style={styles.defaultCredentialsCard}>
+          <View style={styles.credentialsHeader}>
             <IconSymbol
               android_material_icon_name="info"
               ios_icon_name="info.circle"
               size={24}
               color={colors.primary}
             />
-            <Text style={styles.setupInfoText}>
-              Première connexion : Créez votre nom d&apos;utilisateur et mot de passe unique. 
-              Ces identifiants seront stockés de manière sécurisée et chiffrée.
-            </Text>
+            <Text style={styles.credentialsTitle}>Identifiants par défaut</Text>
           </View>
-        )}
+          <View style={styles.credentialRow}>
+            <Text style={styles.credentialLabel}>Nom d&apos;utilisateur:</Text>
+            <Text style={styles.credentialValue}>admin</Text>
+          </View>
+          <View style={styles.credentialRow}>
+            <Text style={styles.credentialLabel}>Mot de passe:</Text>
+            <Text style={styles.credentialValue}>ARM2024@Mali</Text>
+          </View>
+          <Text style={styles.credentialsNote}>
+            Vous pouvez changer ces identifiants après la connexion
+          </Text>
+        </View>
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
@@ -207,9 +183,7 @@ export default function AdminLoginScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={commonStyles.inputLabel}>
-              Mot de passe {isSetupMode && '(min. 8 caractères)'}
-            </Text>
+            <Text style={commonStyles.inputLabel}>Mot de passe</Text>
             <View style={styles.inputWrapper}>
               <IconSymbol
                 android_material_icon_name="lock"
@@ -227,8 +201,8 @@ export default function AdminLoginScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loading}
-                returnKeyType={isSetupMode ? 'next' : 'done'}
-                onSubmitEditing={isSetupMode ? undefined : handleLogin}
+                returnKeyType="done"
+                onSubmitEditing={handleLogin}
               />
               <TouchableOpacity 
                 onPress={() => setShowPassword(!showPassword)}
@@ -244,56 +218,42 @@ export default function AdminLoginScreen() {
             </View>
           </View>
 
-          {isSetupMode && (
-            <View style={styles.inputContainer}>
-              <Text style={commonStyles.inputLabel}>Confirmer le mot de passe</Text>
-              <View style={styles.inputWrapper}>
-                <IconSymbol
-                  android_material_icon_name="lock"
-                  ios_icon_name="lock"
-                  size={20}
-                  color={colors.textSecondary}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirmez votre mot de passe"
-                  placeholderTextColor={colors.textSecondary}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!loading}
-                  returnKeyType="done"
-                  onSubmitEditing={handleSetup}
-                />
-                <TouchableOpacity 
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={loading}
-                >
-                  <IconSymbol
-                    android_material_icon_name={showConfirmPassword ? 'visibility-off' : 'visibility'}
-                    ios_icon_name={showConfirmPassword ? 'eye.slash' : 'eye'}
-                    size={20}
-                    color={colors.textSecondary}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-
           <TouchableOpacity
             style={[buttonStyles.primary, styles.loginButton, loading && styles.disabledButton]}
-            onPress={isSetupMode ? handleSetup : handleLogin}
+            onPress={handleLogin}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color={colors.white} />
             ) : (
-              <Text style={buttonStyles.text}>
-                {isSetupMode ? 'Créer le compte' : 'Se connecter'}
-              </Text>
+              <>
+                <IconSymbol
+                  android_material_icon_name="login"
+                  ios_icon_name="arrow.right.circle"
+                  size={20}
+                  color={colors.white}
+                />
+                <Text style={[buttonStyles.text, styles.loginButtonText]}>
+                  Se connecter
+                </Text>
+              </>
             )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[buttonStyles.outline, styles.resetButton]}
+            onPress={handleResetCredentials}
+            disabled={loading}
+          >
+            <IconSymbol
+              android_material_icon_name="refresh"
+              ios_icon_name="arrow.clockwise"
+              size={18}
+              color={colors.primary}
+            />
+            <Text style={[buttonStyles.textOutline, styles.resetButtonText]}>
+              Réinitialiser les identifiants
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -301,7 +261,7 @@ export default function AdminLoginScreen() {
             onPress={() => router.back()}
             disabled={loading}
           >
-            <Text style={styles.backButtonText}>Retour</Text>
+            <Text style={styles.backButtonText}>Retour à l&apos;accueil</Text>
           </TouchableOpacity>
         </View>
 
@@ -363,22 +323,52 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
-  setupInfo: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  defaultCredentialsCard: {
     backgroundColor: colors.card,
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     marginBottom: 24,
     borderWidth: 2,
     borderColor: colors.primary,
   },
-  setupInfoText: {
-    flex: 1,
-    fontSize: 14,
+  credentialsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  credentialsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
     color: colors.text,
     marginLeft: 12,
-    lineHeight: 20,
+  },
+  credentialRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+  },
+  credentialLabel: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  credentialValue: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  credentialsNote: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 8,
+    fontStyle: 'italic',
+    lineHeight: 16,
   },
   form: {
     width: '100%',
@@ -406,10 +396,24 @@ const styles = StyleSheet.create({
   loginButton: {
     marginTop: 8,
     minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+  },
+  loginButtonText: {
+    marginLeft: 8,
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  resetButton: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetButtonText: {
+    marginLeft: 8,
   },
   backButton: {
     marginTop: 16,
