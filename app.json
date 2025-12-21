@@ -1,8 +1,7 @@
-
 {
   "expo": {
     "name": "A.R.M Alliance",
-    "slug": "arm-alliance",
+    "slug": "A.R.M Alliance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
@@ -48,5 +47,6 @@
         "projectId": "your-project-id"
       }
     }
-  }
+  },
+  "scheme": "A.R.M Alliance"
 }

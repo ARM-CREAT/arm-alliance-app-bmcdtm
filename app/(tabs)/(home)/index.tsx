@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 import { partyInfo, programSections, donationOptions } from '@/data/partyData';
@@ -18,6 +19,52 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleBeforeInstallPrompt = (e: any) => {
+        console.log('beforeinstallprompt event fired');
+        e.preventDefault();
+        setDeferredPrompt(e);
+        setShowInstallButton(true);
+      };
+
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+      // Check if app is already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App is already installed');
+        setShowInstallButton(false);
+      }
+
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
+    }
+  }, []);
+
+  const handleInstallClick = async () => {
+    console.log('Install button clicked');
+    if (!deferredPrompt) {
+      console.log('No deferred prompt available');
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+
+    setDeferredPrompt(null);
+    setShowInstallButton(false);
+  };
 
   return (
     <View style={commonStyles.container}>
@@ -38,6 +85,30 @@ export default function HomeScreen() {
             <Text style={styles.motto}>{partyInfo.motto}</Text>
           </View>
         </View>
+
+        {showInstallButton && Platform.OS === 'web' && (
+          <View style={styles.installSection}>
+            <TouchableOpacity
+              style={styles.installButton}
+              onPress={handleInstallClick}
+            >
+              <View style={styles.installButtonContent}>
+                <IconSymbol
+                  android_material_icon_name="download"
+                  ios_icon_name="arrow.down.circle.fill"
+                  size={28}
+                  color={colors.white}
+                />
+                <View style={styles.installTextContainer}>
+                  <Text style={styles.installButtonText}>Installer l&apos;application</Text>
+                  <Text style={styles.installButtonSubtext}>
+                    Accédez rapidement à A.R.M depuis votre écran d&apos;accueil
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notre Mission</Text>
@@ -174,6 +245,38 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
+  },
+  installSection: {
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 8,
+  },
+  installButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 16,
+    padding: 20,
+    boxShadow: '0px 4px 12px rgba(3, 102, 102, 0.3)',
+    elevation: 4,
+  },
+  installButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  installTextContainer: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  installButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.white,
+    marginBottom: 4,
+  },
+  installButtonSubtext: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.white,
+    opacity: 0.9,
   },
   section: {
     paddingHorizontal: 20,
