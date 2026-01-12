@@ -11,11 +11,13 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
+import { partyInfo } from '@/data/partyData';
 
 export default function AdminLoginScreen() {
   const [username, setUsername] = useState('');
@@ -75,6 +77,15 @@ export default function AdminLoginScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={styles.logoContainer}>
+          <Image
+            source={partyInfo.logoUrl}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.partyName}>{partyInfo.name}</Text>
+        </View>
+
         <View style={styles.header}>
           <View style={styles.iconContainer}>
             <IconSymbol
@@ -231,10 +242,27 @@ export default function AdminLoginScreen() {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 60,
+    paddingTop: 40,
     paddingBottom: 40,
     paddingHorizontal: 20,
     justifyContent: 'center',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.white,
+    marginBottom: 12,
+  },
+  partyName: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: colors.primary,
+    textAlign: 'center',
   },
   header: {
     alignItems: 'center',

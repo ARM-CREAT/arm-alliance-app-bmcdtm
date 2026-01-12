@@ -11,6 +11,7 @@ import {
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { members } from '@/data/partyData';
 import { IconSymbol } from '@/components/IconSymbol';
+import AppHeader from '@/components/AppHeader';
 
 export default function MembersScreen() {
   const handleCall = (phone: string) => {
@@ -22,6 +23,7 @@ export default function MembersScreen() {
 
   return (
     <View style={commonStyles.container}>
+      <AppHeader title="Membres" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -106,12 +108,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 48,
     paddingBottom: 120,
     paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
+    marginTop: 24,
     marginBottom: 32,
   },
   title: {
