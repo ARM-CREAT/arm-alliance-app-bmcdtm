@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
-import { partyInfo, programSections, donationOptions } from '@/data/partyData';
+import { partyInfo, programSections } from '@/data/partyData';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
 import AppHeader from '@/components/AppHeader';
@@ -141,32 +141,6 @@ export default function HomeScreen() {
               </React.Fragment>
             ))}
           </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Soutenez-nous</Text>
-          <Text style={styles.description}>
-            Votre contribution nous aide à réaliser nos objectifs pour un Mali meilleur.
-          </Text>
-          <View style={styles.donationContainer}>
-            {donationOptions.map((option, index) => (
-              <React.Fragment key={index}>
-                <TouchableOpacity
-                  style={styles.donationButton}
-                  onPress={() => router.push('/(tabs)/donation')}
-                >
-                  <Text style={styles.donationAmount}>{option.label}</Text>
-                  <Text style={styles.donationLabel}>Faire un don</Text>
-                </TouchableOpacity>
-              </React.Fragment>
-            ))}
-          </View>
-          <TouchableOpacity
-            style={[buttonStyles.primary, styles.customDonationButton]}
-            onPress={() => router.push('/(tabs)/donation')}
-          >
-            <Text style={buttonStyles.text}>Montant personnalisé</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -329,37 +303,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: colors.textSecondary,
-  },
-  donationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  donationButton: {
-    flex: 1,
-    backgroundColor: colors.secondary,
-    borderRadius: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    marginHorizontal: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    elevation: 2,
-  },
-  donationAmount: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  donationLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  customDonationButton: {
-    marginTop: 8,
   },
   contactCard: {
     backgroundColor: colors.card,

@@ -144,25 +144,6 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/donation')}
-          >
-            <IconSymbol
-              android_material_icon_name="volunteer-activism"
-              ios_icon_name="heart.circle"
-              size={24}
-              color={colors.primary}
-            />
-            <Text style={styles.menuText}>Faire un Don</Text>
-            <IconSymbol
-              android_material_icon_name="chevron-right"
-              ios_icon_name="chevron.right"
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
             onPress={() => router.push('/(tabs)/contact')}
           >
             <IconSymbol

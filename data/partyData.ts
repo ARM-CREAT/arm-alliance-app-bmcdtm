@@ -186,15 +186,3 @@ export const programSections: ProgramSection[] = [
     icon: 'groups',
   },
 ];
-
-export const donationOptions = [
-  { amount: 5, label: '5€' },
-  { amount: 10, label: '10€' },
-  { amount: 20, label: '20€' },
-];
-
-export const bankInfo = {
-  bankName: 'BMS (Banque Malienne de Solidarité)',
-  accountType: 'Compte Épargne',
-  location: 'Mali',
-};
