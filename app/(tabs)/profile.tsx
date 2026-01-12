@@ -13,6 +13,7 @@ import { members, partyInfo } from '@/data/partyData';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
 import { useAdmin } from '@/contexts/AdminContext';
+import AppHeader from '@/components/AppHeader';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={commonStyles.container}>
+      <AppHeader title="Menu" showSearch={false} showChat={false} />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -27,7 +29,7 @@ export default function ProfileScreen() {
       >
         <View style={styles.header}>
           <Image
-            source={{ uri: partyInfo.logoUrl }}
+            source={partyInfo.logoUrl}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -217,12 +219,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 48,
     paddingBottom: 120,
     paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
+    marginTop: 24,
     marginBottom: 32,
   },
   logo: {

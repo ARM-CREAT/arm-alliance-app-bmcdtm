@@ -6,7 +6,7 @@ export const partyInfo = {
   fullName: 'Alliance pour le Rassemblement Malien',
   motto: 'Fraternité, Liberté, Égalité',
   headquarters: 'Bamako Sebenikoro, Rue 530, Porte 245, Bamako, Mali',
-  logoUrl: 'https://prod-finalquest-user-projects-storage-bucket-aws.s3.amazonaws.com/user-projects/55473c00-599f-407b-bc95-90b287ec127f/assets/images/1d5c7cd2-e4c5-4e3d-ac12-d17ba012995b.jpeg?AWSAccessKeyId=AKIAVRUVRKQJC5DISQ4Q&Signature=MG4LClmCmDkCjc8Qd2aAky9RXEc%3D&Expires=1766050335',
+  logoUrl: require('@/assets/images/7e73e0b0-2f6e-4e4a-8e54-90f56c6ad035.jpeg'),
   memberCardUrl: 'https://prod-finalquest-user-projects-storage-bucket-aws.s3.amazonaws.com/user-projects/55473c00-599f-407b-bc95-90b287ec127f/assets/images/370e6be6-546e-4856-bf04-88c1d541b55f.png?AWSAccessKeyId=AKIAVRUVRKQJC5DISQ4Q&Signature=kiixdJqiTbPZDwCQgMwXKmiHfgQ%3D&Expires=1766050335',
 };
 

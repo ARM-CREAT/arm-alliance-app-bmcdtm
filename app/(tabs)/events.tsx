@@ -12,6 +12,7 @@ import { colors, commonStyles } from '@/styles/commonStyles';
 import { Event } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
 import { partyInfo } from '@/data/partyData';
+import AppHeader from '@/components/AppHeader';
 
 export default function EventsScreen() {
   const [events] = useState<Event[]>([
@@ -52,6 +53,7 @@ export default function EventsScreen() {
 
   return (
     <View style={commonStyles.container}>
+      <AppHeader title="Événements" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -76,7 +78,7 @@ export default function EventsScreen() {
               <TouchableOpacity style={styles.eventCard}>
                 {event.imageUrl && (
                   <Image
-                    source={{ uri: event.imageUrl }}
+                    source={event.imageUrl}
                     style={styles.eventImage}
                     resizeMode="contain"
                   />
@@ -131,12 +133,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 48,
     paddingBottom: 120,
     paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
+    marginTop: 24,
     marginBottom: 32,
   },
   title: {

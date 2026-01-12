@@ -14,6 +14,7 @@ import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 import { partyInfo, programSections, donationOptions } from '@/data/partyData';
 import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
+import AppHeader from '@/components/AppHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -68,6 +69,7 @@ export default function HomeScreen() {
 
   return (
     <View style={commonStyles.container}>
+      <AppHeader title="A.R.M" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -75,7 +77,7 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <Image
-            source={{ uri: partyInfo.logoUrl }}
+            source={partyInfo.logoUrl}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -204,7 +206,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 48,
     paddingBottom: 120,
   },
   header: {

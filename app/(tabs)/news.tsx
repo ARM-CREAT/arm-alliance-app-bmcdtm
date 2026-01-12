@@ -12,6 +12,7 @@ import { colors, commonStyles } from '@/styles/commonStyles';
 import { NewsItem } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
 import { partyInfo } from '@/data/partyData';
+import AppHeader from '@/components/AppHeader';
 
 export default function NewsScreen() {
   const [news] = useState<NewsItem[]>([
@@ -52,6 +53,7 @@ export default function NewsScreen() {
 
   return (
     <View style={commonStyles.container}>
+      <AppHeader title="Actualités" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -76,7 +78,7 @@ export default function NewsScreen() {
               <TouchableOpacity style={styles.newsCard}>
                 {item.imageUrl && (
                   <Image
-                    source={{ uri: item.imageUrl }}
+                    source={item.imageUrl}
                     style={styles.newsImage}
                     resizeMode="contain"
                   />
@@ -123,12 +125,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 48,
     paddingBottom: 120,
     paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
+    marginTop: 24,
     marginBottom: 32,
   },
   title: {
