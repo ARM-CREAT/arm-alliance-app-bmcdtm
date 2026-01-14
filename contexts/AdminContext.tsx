@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AdminContextType {
@@ -15,13 +15,13 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 const ADMIN_SESSION_KEY = '@arm_admin_session';
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 heures
 
-// Identifiants par défaut (stockés en dur pour simplicité et fiabilité)
+// Identifiants administrateur
 const DEFAULT_USERNAME = 'admin';
 const DEFAULT_PASSWORD = 'ARM2024@Mali';
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
@@ -55,6 +55,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('❌ Erreur lors de la vérification de l\'authentification:', error);
       setIsAdmin(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,8 +78,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       console.log('  - Nom d\'utilisateur attendu:', DEFAULT_USERNAME);
       console.log('  - Nom d\'utilisateur fourni:', trimmedUsername);
       console.log('  - Correspondance nom d\'utilisateur:', trimmedUsername === DEFAULT_USERNAME);
-      console.log('  - Mot de passe attendu:', DEFAULT_PASSWORD);
-      console.log('  - Mot de passe fourni:', trimmedPassword);
       console.log('  - Correspondance mot de passe:', trimmedPassword === DEFAULT_PASSWORD);
       
       if (trimmedUsername === DEFAULT_USERNAME && trimmedPassword === DEFAULT_PASSWORD) {
@@ -120,9 +120,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // CONNEXION AUTOMATIQUE SUPPRIMÉE
-  // La fonction checkAuth n'est plus appelée automatiquement au démarrage
-  // L'utilisateur doit maintenant se connecter manuellement à chaque fois
+  // Vérifier l'authentification au démarrage
+  useEffect(() => {
+    console.log('🚀 Initialisation AdminContext...');
+    checkAuth();
+  }, []);
 
   return (
     <AdminContext.Provider 
