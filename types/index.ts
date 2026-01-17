@@ -38,6 +38,10 @@ export interface ProgramSection {
   title: string;
   description: string;
   icon: string;
+  details?: Array<{
+    subtitle: string;
+    content: string;
+  }>;
 }
 
 export interface DonationOption {

@@ -38,7 +38,7 @@ export default function AdminNewsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
   const handleAddNews = () => {
     if (!title || !content || !author) {

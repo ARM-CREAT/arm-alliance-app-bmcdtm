@@ -25,7 +25,7 @@ export default function AdminDashboardScreen() {
       console.log('⚠️ Utilisateur non authentifié, redirection vers login...');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, isLoading, router]);
+  }, [isAdmin, isLoading]);
 
   const handleLogout = async () => {
     console.log('🚪 Demande de déconnexion...');

@@ -39,7 +39,7 @@ export default function AdminEventsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
   const handleAddEvent = () => {
     if (!title || !date || !location) {
