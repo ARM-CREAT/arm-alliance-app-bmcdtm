@@ -120,11 +120,28 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Nos Programmes</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Nos Programmes</Text>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('User tapped "Voir tout" button to view all programs');
+                router.push('/(tabs)/programs');
+              }}
+            >
+              <Text style={styles.viewAllText}>Voir tout →</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.programGrid}>
-            {programSections.map((program, index) => (
+            {programSections.slice(0, 6).map((program, index) => (
               <React.Fragment key={index}>
-                <View style={styles.programCard}>
+                <TouchableOpacity
+                  style={styles.programCard}
+                  onPress={() => {
+                    console.log('User tapped program card:', program.title);
+                    router.push('/(tabs)/programs');
+                  }}
+                  activeOpacity={0.7}
+                >
                   <View style={styles.programIconContainer}>
                     <IconSymbol
                       android_material_icon_name={program.icon as any}
@@ -137,10 +154,25 @@ export default function HomeScreen() {
                   <Text style={styles.programDescription} numberOfLines={3}>
                     {program.description}
                   </Text>
-                </View>
+                </TouchableOpacity>
               </React.Fragment>
             ))}
           </View>
+          <TouchableOpacity
+            style={styles.viewAllButton}
+            onPress={() => {
+              console.log('User tapped "Voir tous les programmes" button');
+              router.push('/(tabs)/programs');
+            }}
+          >
+            <Text style={styles.viewAllButtonText}>Voir tous les programmes</Text>
+            <IconSymbol
+              android_material_icon_name="arrow-forward"
+              ios_icon_name="arrow.right"
+              size={20}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -150,7 +182,10 @@ export default function HomeScreen() {
           </Text>
           <TouchableOpacity
             style={buttonStyles.primary}
-            onPress={() => router.push('/(tabs)/membership')}
+            onPress={() => {
+              console.log('User tapped "Adhérer au parti" button');
+              router.push('/(tabs)/membership');
+            }}
           >
             <Text style={buttonStyles.text}>Adhérer au parti</Text>
           </TouchableOpacity>
@@ -257,11 +292,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 32,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 24,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 16,
+  },
+  viewAllText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.primary,
   },
   description: {
     fontSize: 16,
@@ -303,6 +348,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: colors.textSecondary,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.card,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  viewAllButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.primary,
+    marginRight: 8,
   },
   contactCard: {
     backgroundColor: colors.card,
