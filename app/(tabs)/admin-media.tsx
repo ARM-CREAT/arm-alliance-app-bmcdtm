@@ -38,7 +38,7 @@ export default function AdminMediaScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleAddMedia = () => {
     if (!title) {
