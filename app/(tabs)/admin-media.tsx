@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -38,9 +38,9 @@ export default function AdminMediaScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
-  const handleAddMedia = () => {
+  const handleAddMedia = useCallback(() => {
     if (!title) {
       Alert.alert('Erreur', 'Veuillez remplir le titre');
       return;
@@ -60,9 +60,9 @@ export default function AdminMediaScreen() {
     setDescription('');
     setShowAddForm(false);
     Alert.alert('Succès', 'Média ajouté avec succès');
-  };
+  }, [title, description, mediaType, mediaItems]);
 
-  const handleDeleteMedia = (id: string) => {
+  const handleDeleteMedia = useCallback((id: string) => {
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer ce média ?',
@@ -78,7 +78,7 @@ export default function AdminMediaScreen() {
         },
       ]
     );
-  };
+  }, [mediaItems]);
 
   if (!isAdmin) {
     return null;
@@ -174,7 +174,7 @@ export default function AdminMediaScreen() {
             </View>
 
             <View style={styles.logoPreview}>
-              <Image source={{ uri: partyInfo.logoUrl }} style={styles.logoImage} resizeMode="contain" />
+              <Image source={partyInfo.logoUrl} style={styles.logoImage} resizeMode="contain" />
               <Text style={styles.logoText}>Le logo du parti sera utilisé pour tous les médias</Text>
             </View>
 
@@ -227,7 +227,7 @@ export default function AdminMediaScreen() {
               <React.Fragment key={index}>
                 <View style={styles.mediaCard}>
                   <Image
-                    source={{ uri: item.url }}
+                    source={partyInfo.logoUrl}
                     style={styles.mediaThumbnail}
                     resizeMode="contain"
                   />

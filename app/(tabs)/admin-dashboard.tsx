@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -25,9 +25,9 @@ export default function AdminDashboardScreen() {
       console.log('⚠️ Utilisateur non authentifié, redirection vers login...');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, isLoading, router]);
+  }, [isAdmin, isLoading]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     console.log('🚪 Demande de déconnexion...');
     Alert.alert(
       'Déconnexion',
@@ -47,7 +47,7 @@ export default function AdminDashboardScreen() {
         },
       ]
     );
-  };
+  }, [logout, router]);
 
   if (isLoading) {
     return (

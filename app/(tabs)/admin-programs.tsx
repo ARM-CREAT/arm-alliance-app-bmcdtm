@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -27,15 +27,15 @@ export default function AdminProgramsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
-  const handleEdit = (program: typeof programSections[0]) => {
+  const handleEdit = useCallback((program: typeof programSections[0]) => {
     setEditingId(program.id);
     setEditTitle(program.title);
     setEditDescription(program.description);
-  };
+  }, []);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!editTitle || !editDescription) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
@@ -53,13 +53,13 @@ export default function AdminProgramsScreen() {
     setEditTitle('');
     setEditDescription('');
     Alert.alert('Succès', 'Programme mis à jour avec succès');
-  };
+  }, [editTitle, editDescription, editingId, programs]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setEditingId(null);
     setEditTitle('');
     setEditDescription('');
-  };
+  }, []);
 
   if (!isAdmin) {
     return null;

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -38,9 +38,9 @@ export default function AdminNewsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
-  const handleAddNews = () => {
+  const handleAddNews = useCallback(() => {
     if (!title || !content || !author) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
@@ -61,9 +61,9 @@ export default function AdminNewsScreen() {
     setAuthor('');
     setShowAddForm(false);
     Alert.alert('Succès', 'Actualité ajoutée avec succès');
-  };
+  }, [title, content, author, newsItems]);
 
-  const handleDeleteNews = (id: string) => {
+  const handleDeleteNews = useCallback((id: string) => {
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer cette actualité ?',
@@ -79,7 +79,7 @@ export default function AdminNewsScreen() {
         },
       ]
     );
-  };
+  }, [newsItems]);
 
   if (!isAdmin) {
     return null;
@@ -127,7 +127,7 @@ export default function AdminNewsScreen() {
             <Text style={styles.formTitle}>Nouvelle Actualité</Text>
 
             <View style={styles.logoPreview}>
-              <Image source={{ uri: partyInfo.logoUrl }} style={styles.logoImage} resizeMode="contain" />
+              <Image source={partyInfo.logoUrl} style={styles.logoImage} resizeMode="contain" />
               <Text style={styles.logoText}>Le logo du parti sera utilisé pour toutes les actualités</Text>
             </View>
 
@@ -188,7 +188,7 @@ export default function AdminNewsScreen() {
               <React.Fragment key={index}>
                 <View style={styles.newsCard}>
                   <Image
-                    source={{ uri: news.imageUrl }}
+                    source={partyInfo.logoUrl}
                     style={styles.newsImage}
                     resizeMode="contain"
                   />

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -38,9 +38,9 @@ export default function AdminConferenceScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
-  const handleAddConference = () => {
+  const handleAddConference = useCallback(() => {
     if (!title || !url) {
       Alert.alert('Erreur', 'Veuillez remplir au moins le titre et l\'URL');
       return;
@@ -63,17 +63,17 @@ export default function AdminConferenceScreen() {
     setScheduledDate('');
     setShowAddForm(false);
     Alert.alert('Succès', 'Conférence ajoutée avec succès');
-  };
+  }, [title, url, description, scheduledDate, conferences]);
 
-  const toggleLiveStatus = (id: string) => {
+  const toggleLiveStatus = useCallback((id: string) => {
     setConferences(
       conferences.map(conf =>
         conf.id === id ? { ...conf, isLive: !conf.isLive } : conf
       )
     );
-  };
+  }, [conferences]);
 
-  const handleDeleteConference = (id: string) => {
+  const handleDeleteConference = useCallback((id: string) => {
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer cette conférence ?',
@@ -89,7 +89,7 @@ export default function AdminConferenceScreen() {
         },
       ]
     );
-  };
+  }, [conferences]);
 
   if (!isAdmin) {
     return null;

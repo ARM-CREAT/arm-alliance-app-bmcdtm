@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -39,9 +39,9 @@ export default function AdminEventsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
-  const handleAddEvent = () => {
+  const handleAddEvent = useCallback(() => {
     if (!title || !date || !location) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
@@ -63,9 +63,9 @@ export default function AdminEventsScreen() {
     setLocation('');
     setShowAddForm(false);
     Alert.alert('Succès', 'Événement ajouté avec succès');
-  };
+  }, [title, date, location, description, events]);
 
-  const handleDeleteEvent = (id: string) => {
+  const handleDeleteEvent = useCallback((id: string) => {
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer cet événement ?',
@@ -81,7 +81,7 @@ export default function AdminEventsScreen() {
         },
       ]
     );
-  };
+  }, [events]);
 
   if (!isAdmin) {
     return null;
@@ -129,7 +129,7 @@ export default function AdminEventsScreen() {
             <Text style={styles.formTitle}>Nouvel Événement</Text>
 
             <View style={styles.logoPreview}>
-              <Image source={{ uri: partyInfo.logoUrl }} style={styles.logoImage} resizeMode="contain" />
+              <Image source={partyInfo.logoUrl} style={styles.logoImage} resizeMode="contain" />
               <Text style={styles.logoText}>Le logo du parti sera utilisé pour tous les événements</Text>
             </View>
 
@@ -198,7 +198,7 @@ export default function AdminEventsScreen() {
               <React.Fragment key={index}>
                 <View style={styles.eventCard}>
                   <Image
-                    source={{ uri: event.imageUrl }}
+                    source={partyInfo.logoUrl}
                     style={styles.eventImage}
                     resizeMode="contain"
                   />
