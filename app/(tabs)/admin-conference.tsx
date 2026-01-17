@@ -38,7 +38,7 @@ export default function AdminConferenceScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleAddConference = () => {
     if (!title || !url) {

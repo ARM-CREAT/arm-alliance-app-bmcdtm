@@ -27,7 +27,7 @@ export default function AdminProgramsScreen() {
     if (!isAdmin) {
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleEdit = (program: typeof programSections[0]) => {
     setEditingId(program.id);
