@@ -25,7 +25,7 @@ export default function AdminDashboardScreen() {
       console.log('⚠️ Utilisateur non authentifié, redirection vers login...');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin, isLoading]);
+  }, [isAdmin, isLoading, router]);
 
   const handleLogout = useCallback(async () => {
     console.log('🚪 Demande de déconnexion...');
@@ -110,7 +110,7 @@ export default function AdminDashboardScreen() {
         <View style={styles.header}>
           <View style={styles.iconContainer}>
             <IconSymbol
-              android_material_icon_name="admin-panel-settings"
+              android_material_icon_name="settings"
               ios_icon_name="lock.shield"
               size={64}
               color={colors.white}

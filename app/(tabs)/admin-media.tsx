@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -32,37 +32,43 @@ export default function AdminMediaScreen() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [url, setUrl] = useState('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('🔐 AdminMedia - Vérification authentification:', isAdmin);
     if (!isAdmin) {
+      console.log('⚠️ Non authentifié, redirection vers login');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleAddMedia = useCallback(() => {
-    if (!title) {
-      Alert.alert('Erreur', 'Veuillez remplir le titre');
+    console.log('➕ Ajout d\'un nouveau média');
+    if (!title || !url) {
+      Alert.alert('Erreur', 'Veuillez remplir au moins le titre et l\'URL');
       return;
     }
 
     const newMedia: MediaItem = {
       id: Date.now().toString(),
       type: mediaType,
-      url: partyInfo.logoUrl,
+      url,
       title,
       description,
-      date: new Date().toISOString(),
+      date: new Date().toLocaleDateString('fr-FR'),
     };
 
     setMediaItems([newMedia, ...mediaItems]);
     setTitle('');
     setDescription('');
+    setUrl('');
     setShowAddForm(false);
     Alert.alert('Succès', 'Média ajouté avec succès');
-  }, [title, description, mediaType, mediaItems]);
+  }, [title, url, description, mediaType, mediaItems]);
 
   const handleDeleteMedia = useCallback((id: string) => {
+    console.log('🗑️ Demande de suppression du média:', id);
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer ce média ?',
@@ -94,7 +100,10 @@ export default function AdminMediaScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => {
+              console.log('⬅️ Retour au tableau de bord');
+              router.back();
+            }}
           >
             <IconSymbol
               android_material_icon_name="arrow-back"
@@ -103,12 +112,15 @@ export default function AdminMediaScreen() {
               color={colors.text}
             />
           </TouchableOpacity>
-          <Text style={styles.title}>Photos & Vidéos</Text>
+          <Text style={styles.title}>Médias</Text>
         </View>
 
         <TouchableOpacity
           style={[buttonStyles.primary, styles.addButton]}
-          onPress={() => setShowAddForm(!showAddForm)}
+          onPress={() => {
+            console.log('🔄 Toggle formulaire d\'ajout');
+            setShowAddForm(!showAddForm);
+          }}
         >
           <IconSymbol
             android_material_icon_name={showAddForm ? 'close' : 'add'}
@@ -125,6 +137,7 @@ export default function AdminMediaScreen() {
           <View style={styles.formCard}>
             <Text style={styles.formTitle}>Nouveau Média</Text>
 
+            <Text style={commonStyles.inputLabel}>Type de média</Text>
             <View style={styles.typeSelector}>
               <TouchableOpacity
                 style={[
@@ -136,7 +149,7 @@ export default function AdminMediaScreen() {
                 <IconSymbol
                   android_material_icon_name="photo"
                   ios_icon_name="photo"
-                  size={24}
+                  size={20}
                   color={mediaType === 'photo' ? colors.white : colors.primary}
                 />
                 <Text
@@ -148,7 +161,6 @@ export default function AdminMediaScreen() {
                   Photo
                 </Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={[
                   styles.typeButton,
@@ -159,7 +171,7 @@ export default function AdminMediaScreen() {
                 <IconSymbol
                   android_material_icon_name="videocam"
                   ios_icon_name="video"
-                  size={24}
+                  size={20}
                   color={mediaType === 'video' ? colors.white : colors.primary}
                 />
                 <Text
@@ -173,12 +185,7 @@ export default function AdminMediaScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.logoPreview}>
-              <Image source={partyInfo.logoUrl} style={styles.logoImage} resizeMode="contain" />
-              <Text style={styles.logoText}>Le logo du parti sera utilisé pour tous les médias</Text>
-            </View>
-
-            <Text style={commonStyles.inputLabel}>Titre</Text>
+            <Text style={commonStyles.inputLabel}>Titre *</Text>
             <TextInput
               style={commonStyles.input}
               placeholder="Titre du média"
@@ -193,7 +200,21 @@ export default function AdminMediaScreen() {
               value={description}
               onChangeText={setDescription}
               multiline
-              numberOfLines={4}
+              numberOfLines={3}
+            />
+
+            <Text style={commonStyles.inputLabel}>URL *</Text>
+            <TextInput
+              style={commonStyles.input}
+              placeholder={
+                mediaType === 'photo'
+                  ? 'https://example.com/image.jpg'
+                  : 'https://youtube.com/watch?v=...'
+              }
+              value={url}
+              onChangeText={setUrl}
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <TouchableOpacity
@@ -207,14 +228,14 @@ export default function AdminMediaScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            Galerie ({mediaItems.length})
+            Médias ({mediaItems.length})
           </Text>
 
           {mediaItems.length === 0 ? (
             <View style={styles.emptyState}>
               <IconSymbol
                 android_material_icon_name="photo-library"
-                ios_icon_name="photo.stack"
+                ios_icon_name="photo.on.rectangle"
                 size={64}
                 color={colors.textSecondary}
               />
@@ -223,52 +244,67 @@ export default function AdminMediaScreen() {
               </Text>
             </View>
           ) : (
-            mediaItems.map((item, index) => (
-              <React.Fragment key={index}>
-                <View style={styles.mediaCard}>
-                  <Image
-                    source={partyInfo.logoUrl}
-                    style={styles.mediaThumbnail}
-                    resizeMode="contain"
-                  />
-                  <View style={styles.mediaContent}>
-                    <View style={styles.mediaHeader}>
-                      <View style={styles.mediaTypeTag}>
+            <View style={styles.mediaGrid}>
+              {mediaItems.map((item, index) => (
+                <React.Fragment key={index}>
+                  <View style={styles.mediaCard}>
+                    {item.type === 'photo' ? (
+                      <Image
+                        source={{ uri: item.url }}
+                        style={styles.mediaImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.videoPlaceholder}>
                         <IconSymbol
-                          android_material_icon_name={
-                            item.type === 'photo' ? 'photo' : 'videocam'
-                          }
-                          ios_icon_name={item.type === 'photo' ? 'photo' : 'video'}
-                          size={16}
+                          android_material_icon_name="play-circle"
+                          ios_icon_name="play.circle"
+                          size={48}
                           color={colors.white}
                         />
-                        <Text style={styles.mediaTypeText}>
-                          {item.type === 'photo' ? 'Photo' : 'Vidéo'}
+                      </View>
+                    )}
+                    <View style={styles.mediaInfo}>
+                      <View style={styles.mediaHeader}>
+                        <View style={styles.mediaTypeIcon}>
+                          <IconSymbol
+                            android_material_icon_name={
+                              item.type === 'photo' ? 'photo' : 'videocam'
+                            }
+                            ios_icon_name={
+                              item.type === 'photo' ? 'photo' : 'video'
+                            }
+                            size={16}
+                            color={colors.primary}
+                          />
+                        </View>
+                        <Text style={styles.mediaTitle} numberOfLines={1}>
+                          {item.title}
                         </Text>
                       </View>
+                      {item.description && (
+                        <Text style={styles.mediaDescription} numberOfLines={2}>
+                          {item.description}
+                        </Text>
+                      )}
+                      <View style={styles.mediaFooter}>
+                        <Text style={styles.mediaDate}>{item.date}</Text>
+                        <TouchableOpacity
+                          onPress={() => handleDeleteMedia(item.id)}
+                        >
+                          <IconSymbol
+                            android_material_icon_name="delete"
+                            ios_icon_name="trash"
+                            size={18}
+                            color={colors.error}
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                    <Text style={styles.mediaTitle}>{item.title}</Text>
-                    <Text style={styles.mediaDescription} numberOfLines={2}>
-                      {item.description}
-                    </Text>
-                    <Text style={styles.mediaDate}>
-                      {new Date(item.date).toLocaleDateString('fr-FR')}
-                    </Text>
                   </View>
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => handleDeleteMedia(item.id)}
-                  >
-                    <IconSymbol
-                      android_material_icon_name="delete"
-                      ios_icon_name="trash"
-                      size={20}
-                      color={colors.error}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </React.Fragment>
-            ))
+                </React.Fragment>
+              ))}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -322,7 +358,8 @@ const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
-    marginBottom: 20,
+    gap: 12,
+    marginBottom: 16,
   },
   typeButton: {
     flex: 1,
@@ -334,40 +371,21 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
-    marginHorizontal: 4,
+    gap: 8,
   },
   typeButtonActive: {
     backgroundColor: colors.primary,
   },
   typeButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.primary,
-    marginLeft: 8,
   },
   typeButtonTextActive: {
     color: colors.white,
   },
-  logoPreview: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  logoImage: {
-    width: 120,
-    height: 120,
-    marginBottom: 12,
-  },
-  logoText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
   textArea: {
-    height: 100,
+    height: 80,
     textAlignVertical: 'top',
   },
   section: {
@@ -389,61 +407,61 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 16,
   },
-  mediaCard: {
+  mediaGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  mediaCard: {
+    width: '48%',
     backgroundColor: colors.card,
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
+    overflow: 'hidden',
     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
     elevation: 2,
   },
-  mediaThumbnail: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    backgroundColor: colors.white,
+  mediaImage: {
+    width: '100%',
+    height: 120,
+    backgroundColor: colors.border,
   },
-  mediaContent: {
-    flex: 1,
-    marginLeft: 12,
+  videoPlaceholder: {
+    width: '100%',
+    height: 120,
+    backgroundColor: colors.text,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mediaInfo: {
+    padding: 12,
   },
   mediaHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  mediaTypeTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  mediaTypeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.white,
-    marginLeft: 4,
+  mediaTypeIcon: {
+    marginRight: 6,
   },
   mediaTitle: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 14,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 4,
   },
   mediaDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: 4,
-  },
-  mediaDate: {
     fontSize: 12,
     color: colors.textSecondary,
+    lineHeight: 16,
+    marginBottom: 8,
   },
-  deleteButton: {
-    padding: 8,
+  mediaFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  mediaDate: {
+    fontSize: 11,
+    color: colors.textSecondary,
   },
 });

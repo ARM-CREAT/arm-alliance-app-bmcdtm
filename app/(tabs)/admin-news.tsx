@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -34,13 +34,16 @@ export default function AdminNewsScreen() {
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('🔐 AdminNews - Vérification authentification:', isAdmin);
     if (!isAdmin) {
+      console.log('⚠️ Non authentifié, redirection vers login');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleAddNews = useCallback(() => {
+    console.log('➕ Ajout d\'une nouvelle actualité');
     if (!title || !content || !author) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
@@ -64,6 +67,7 @@ export default function AdminNewsScreen() {
   }, [title, content, author, newsItems]);
 
   const handleDeleteNews = useCallback((id: string) => {
+    console.log('🗑️ Demande de suppression de l\'actualité:', id);
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer cette actualité ?',
@@ -95,7 +99,10 @@ export default function AdminNewsScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => {
+              console.log('⬅️ Retour au tableau de bord');
+              router.back();
+            }}
           >
             <IconSymbol
               android_material_icon_name="arrow-back"
@@ -109,7 +116,10 @@ export default function AdminNewsScreen() {
 
         <TouchableOpacity
           style={[buttonStyles.primary, styles.addButton]}
-          onPress={() => setShowAddForm(!showAddForm)}
+          onPress={() => {
+            console.log('🔄 Toggle formulaire d\'ajout');
+            setShowAddForm(!showAddForm);
+          }}
         >
           <IconSymbol
             android_material_icon_name={showAddForm ? 'close' : 'add'}

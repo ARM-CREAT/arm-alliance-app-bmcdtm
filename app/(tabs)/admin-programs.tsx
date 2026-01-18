@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -23,19 +23,23 @@ export default function AdminProgramsScreen() {
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('🔐 AdminPrograms - Vérification authentification:', isAdmin);
     if (!isAdmin) {
+      console.log('⚠️ Non authentifié, redirection vers login');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleEdit = useCallback((program: typeof programSections[0]) => {
+    console.log('✏️ Édition du programme:', program.title);
     setEditingId(program.id);
     setEditTitle(program.title);
     setEditDescription(program.description);
   }, []);
 
   const handleSave = useCallback(() => {
+    console.log('💾 Sauvegarde des modifications');
     if (!editTitle || !editDescription) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
@@ -56,6 +60,7 @@ export default function AdminProgramsScreen() {
   }, [editTitle, editDescription, editingId, programs]);
 
   const handleCancel = useCallback(() => {
+    console.log('❌ Annulation de l\'édition');
     setEditingId(null);
     setEditTitle('');
     setEditDescription('');
@@ -75,7 +80,10 @@ export default function AdminProgramsScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => {
+              console.log('⬅️ Retour au tableau de bord');
+              router.back();
+            }}
           >
             <IconSymbol
               android_material_icon_name="arrow-back"

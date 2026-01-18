@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -34,13 +34,16 @@ export default function AdminConferenceScreen() {
   const [url, setUrl] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('🔐 AdminConference - Vérification authentification:', isAdmin);
     if (!isAdmin) {
+      console.log('⚠️ Non authentifié, redirection vers login');
       router.replace('/(tabs)/admin-login');
     }
-  }, [isAdmin]);
+  }, [isAdmin, router]);
 
   const handleAddConference = useCallback(() => {
+    console.log('➕ Ajout d\'une nouvelle conférence');
     if (!title || !url) {
       Alert.alert('Erreur', 'Veuillez remplir au moins le titre et l\'URL');
       return;
@@ -66,6 +69,7 @@ export default function AdminConferenceScreen() {
   }, [title, url, description, scheduledDate, conferences]);
 
   const toggleLiveStatus = useCallback((id: string) => {
+    console.log('🔴 Changement du statut live pour la conférence:', id);
     setConferences(
       conferences.map(conf =>
         conf.id === id ? { ...conf, isLive: !conf.isLive } : conf
@@ -74,6 +78,7 @@ export default function AdminConferenceScreen() {
   }, [conferences]);
 
   const handleDeleteConference = useCallback((id: string) => {
+    console.log('🗑️ Demande de suppression de la conférence:', id);
     Alert.alert(
       'Confirmation',
       'Êtes-vous sûr de vouloir supprimer cette conférence ?',
@@ -105,7 +110,10 @@ export default function AdminConferenceScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => {
+              console.log('⬅️ Retour au tableau de bord');
+              router.back();
+            }}
           >
             <IconSymbol
               android_material_icon_name="arrow-back"
@@ -119,7 +127,10 @@ export default function AdminConferenceScreen() {
 
         <TouchableOpacity
           style={[buttonStyles.primary, styles.addButton]}
-          onPress={() => setShowAddForm(!showAddForm)}
+          onPress={() => {
+            console.log('🔄 Toggle formulaire d\'ajout');
+            setShowAddForm(!showAddForm);
+          }}
         >
           <IconSymbol
             android_material_icon_name={showAddForm ? 'close' : 'add'}
@@ -201,7 +212,7 @@ export default function AdminConferenceScreen() {
           {conferences.length === 0 ? (
             <View style={styles.emptyState}>
               <IconSymbol
-                android_material_icon_name="video-call"
+                android_material_icon_name="videocam"
                 ios_icon_name="video"
                 size={64}
                 color={colors.textSecondary}
@@ -217,7 +228,7 @@ export default function AdminConferenceScreen() {
                   <View style={styles.conferenceHeader}>
                     <View style={styles.conferenceIconContainer}>
                       <IconSymbol
-                        android_material_icon_name="video-call"
+                        android_material_icon_name="videocam"
                         ios_icon_name="video"
                         size={28}
                         color={colors.primary}
