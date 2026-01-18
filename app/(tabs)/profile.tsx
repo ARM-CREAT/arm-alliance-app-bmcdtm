@@ -6,155 +6,76 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import { colors, commonStyles } from '@/styles/commonStyles';
-import { members, partyInfo } from '@/data/partyData';
-import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/IconSymbol';
-import { useAdmin } from '@/contexts/AdminContext';
-import AppHeader from '@/components/AppHeader';
 
 export default function ProfileScreen() {
-  const router = useRouter();
-  const { isAdmin } = useAdmin();
-
   return (
     <View style={commonStyles.container}>
-      <AppHeader title="Menu" showSearch={false} showChat={false} />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Image
-            source={partyInfo.logoUrl}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Menu Principal</Text>
-        </View>
-
-        {isAdmin && (
-          <View style={styles.adminSection}>
-            <TouchableOpacity
-              style={styles.adminCard}
-              onPress={() => router.push('/(tabs)/admin-dashboard')}
-            >
-              <View style={styles.adminIconContainer}>
-                <IconSymbol
-                  android_material_icon_name="admin-panel-settings"
-                  ios_icon_name="lock.shield"
-                  size={32}
-                  color={colors.white}
-                />
-              </View>
-              <View style={styles.adminContent}>
-                <Text style={styles.adminTitle}>Tableau de Bord Admin</Text>
-                <Text style={styles.adminSubtitle}>Gérer le contenu de l&apos;application</Text>
-              </View>
-              <IconSymbol
-                android_material_icon_name="chevron-right"
-                ios_icon_name="chevron.right"
-                size={24}
-                color={colors.white}
-              />
-            </TouchableOpacity>
+          <View style={styles.avatarContainer}>
+            <IconSymbol
+              android_material_icon_name="person"
+              ios_icon_name="person.fill"
+              size={48}
+              color={colors.white}
+            />
           </View>
-        )}
+          <Text style={styles.name}>Utilisateur</Text>
+          <Text style={styles.email}>utilisateur@example.com</Text>
+        </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Navigation</Text>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/(home)/')}
-          >
+          <Text style={styles.sectionTitle}>Paramètres</Text>
+          
+          <TouchableOpacity style={styles.menuItem}>
             <IconSymbol
-              android_material_icon_name="home"
-              ios_icon_name="house"
+              android_material_icon_name="notifications"
+              ios_icon_name="bell"
               size={24}
-              color={colors.primary}
+              color={colors.text}
             />
-            <Text style={styles.menuText}>Accueil</Text>
+            <Text style={styles.menuText}>Notifications</Text>
             <IconSymbol
-              android_material_icon_name="chevron-right"
+              android_material_icon_name="arrow-forward"
               ios_icon_name="chevron.right"
               size={20}
               color={colors.textSecondary}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/members')}
-          >
+          <TouchableOpacity style={styles.menuItem}>
             <IconSymbol
-              android_material_icon_name="groups"
-              ios_icon_name="person.3"
+              android_material_icon_name="settings"
+              ios_icon_name="gear"
               size={24}
-              color={colors.primary}
+              color={colors.text}
             />
-            <Text style={styles.menuText}>Membres du Bureau</Text>
+            <Text style={styles.menuText}>Paramètres</Text>
             <IconSymbol
-              android_material_icon_name="chevron-right"
+              android_material_icon_name="arrow-forward"
               ios_icon_name="chevron.right"
               size={20}
               color={colors.textSecondary}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/programs')}
-          >
+          <TouchableOpacity style={styles.menuItem}>
             <IconSymbol
-              android_material_icon_name="description"
-              ios_icon_name="doc.text"
+              android_material_icon_name="help"
+              ios_icon_name="questionmark.circle"
               size={24}
-              color={colors.primary}
+              color={colors.text}
             />
-            <Text style={styles.menuText}>Nos Programmes</Text>
+            <Text style={styles.menuText}>Aide</Text>
             <IconSymbol
-              android_material_icon_name="chevron-right"
-              ios_icon_name="chevron.right"
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/regions')}
-          >
-            <IconSymbol
-              android_material_icon_name="map"
-              ios_icon_name="map"
-              size={24}
-              color={colors.primary}
-            />
-            <Text style={styles.menuText}>Régions du Mali</Text>
-            <IconSymbol
-              android_material_icon_name="chevron-right"
-              ios_icon_name="chevron.right"
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(tabs)/contact')}
-          >
-            <IconSymbol
-              android_material_icon_name="contact-mail"
-              ios_icon_name="envelope"
-              size={24}
-              color={colors.primary}
-            />
-            <Text style={styles.menuText}>Contact</Text>
-            <IconSymbol
-              android_material_icon_name="chevron-right"
+              android_material_icon_name="arrow-forward"
               ios_icon_name="chevron.right"
               size={20}
               color={colors.textSecondary}
@@ -162,33 +83,18 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {!isAdmin && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Administration</Text>
-            <TouchableOpacity
-              style={styles.adminLoginButton}
-              onPress={() => router.push('/(tabs)/admin-login')}
-            >
-              <IconSymbol
-                android_material_icon_name="admin-panel-settings"
-                ios_icon_name="lock.shield"
-                size={24}
-                color={colors.primary}
-              />
-              <Text style={styles.menuText}>Connexion Administrateur</Text>
-              <IconSymbol
-                android_material_icon_name="chevron-right"
-                ios_icon_name="chevron.right"
-                size={20}
-                color={colors.textSecondary}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>{partyInfo.motto}</Text>
-          <Text style={styles.infoText}>{partyInfo.fullName}</Text>
+        <View style={styles.section}>
+          <TouchableOpacity style={[styles.menuItem, styles.logoutButton]}>
+            <IconSymbol
+              android_material_icon_name="logout"
+              ios_icon_name="arrow.right.square"
+              size={24}
+              color={colors.error}
+            />
+            <Text style={[styles.menuText, styles.logoutText]}>
+              Déconnexion
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -201,62 +107,36 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 120,
-    paddingHorizontal: 20,
   },
   header: {
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 32,
+    paddingVertical: 48,
+    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
   },
-  logo: {
+  avatarContainer: {
     width: 100,
     height: 100,
-    marginBottom: 16,
     borderRadius: 50,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  adminSection: {
-    marginBottom: 24,
-  },
-  adminCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
-    elevation: 4,
-  },
-  adminIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginBottom: 16,
   },
-  adminContent: {
-    flex: 1,
-  },
-  adminTitle: {
-    fontSize: 18,
+  name: {
+    fontSize: 24,
     fontWeight: '700',
     color: colors.white,
     marginBottom: 4,
   },
-  adminSubtitle: {
-    fontSize: 13,
+  email: {
+    fontSize: 16,
     color: colors.white,
-    opacity: 0.9,
+    opacity: 0.8,
   },
   section: {
-    marginBottom: 24,
+    paddingHorizontal: 20,
+    marginTop: 32,
   },
   sectionTitle: {
     fontSize: 20,
@@ -271,42 +151,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    elevation: 2,
-  },
-  adminLoginButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: colors.primary,
   },
   menuText: {
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginLeft: 12,
+    marginLeft: 16,
   },
-  infoCard: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    marginTop: 16,
+  logoutButton: {
+    borderWidth: 1,
+    borderColor: colors.error,
   },
-  infoTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.white,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  infoText: {
-    fontSize: 14,
-    color: colors.white,
-    textAlign: 'center',
+  logoutText: {
+    color: colors.error,
   },
 });

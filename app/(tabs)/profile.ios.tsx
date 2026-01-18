@@ -1,75 +1,169 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { IconSymbol } from "@/components/IconSymbol";
-import { GlassView } from "expo-glass-effect";
-import { useTheme } from "@react-navigation/native";
+
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { colors, commonStyles } from '@/styles/commonStyles';
+import { IconSymbol } from '@/components/IconSymbol';
 
 export default function ProfileScreen() {
-  const theme = useTheme();
-
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top']}>
+    <View style={commonStyles.container}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <GlassView style={styles.profileHeader} glassEffectStyle="regular">
-          <IconSymbol ios_icon_name="person.circle.fill" android_material_icon_name="person" size={24} color={theme.colors.primary} />
-          <Text style={[styles.name, { color: theme.colors.text }]}>John Doe</Text>
-          <Text style={[styles.email, { color: theme.dark ? '#98989D' : '#666' }]}>john.doe@example.com</Text>
-        </GlassView>
+        <View style={styles.header}>
+          <View style={styles.avatarContainer}>
+            <IconSymbol
+              android_material_icon_name="person"
+              ios_icon_name="person.fill"
+              size={48}
+              color={colors.white}
+            />
+          </View>
+          <Text style={styles.name}>Utilisateur</Text>
+          <Text style={styles.email}>utilisateur@example.com</Text>
+        </View>
 
-        <GlassView style={styles.section} glassEffectStyle="regular">
-          <View style={styles.infoRow}>
-            <IconSymbol ios_icon_name="phone.fill" android_material_icon_name="phone" size={24} color={theme.dark ? '#98989D' : '#666'} />
-            <Text style={[styles.infoText, { color: theme.colors.text }]}>+1 (555) 123-4567</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <IconSymbol ios_icon_name="location.fill" android_material_icon_name="location-on" size={24} color={theme.dark ? '#98989D' : '#666'} />
-            <Text style={[styles.infoText, { color: theme.colors.text }]}>San Francisco, CA</Text>
-          </View>
-        </GlassView>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Paramètres</Text>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol
+              android_material_icon_name="notifications"
+              ios_icon_name="bell"
+              size={24}
+              color={colors.text}
+            />
+            <Text style={styles.menuText}>Notifications</Text>
+            <IconSymbol
+              android_material_icon_name="arrow-forward"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol
+              android_material_icon_name="settings"
+              ios_icon_name="gear"
+              size={24}
+              color={colors.text}
+            />
+            <Text style={styles.menuText}>Paramètres</Text>
+            <IconSymbol
+              android_material_icon_name="arrow-forward"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol
+              android_material_icon_name="help"
+              ios_icon_name="questionmark.circle"
+              size={24}
+              color={colors.text}
+            />
+            <Text style={styles.menuText}>Aide</Text>
+            <IconSymbol
+              android_material_icon_name="arrow-forward"
+              ios_icon_name="chevron.right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
+          <TouchableOpacity style={[styles.menuItem, styles.logoutButton]}>
+            <IconSymbol
+              android_material_icon_name="logout"
+              ios_icon_name="arrow.right.square"
+              size={24}
+              color={colors.error}
+            />
+            <Text style={[styles.menuText, styles.logoutText]}>
+              Déconnexion
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  scrollView: {
     flex: 1,
   },
-  container: {
-    flex: 1,
+  scrollContent: {
+    paddingBottom: 120,
   },
-  contentContainer: {
-    padding: 20,
-  },
-  profileHeader: {
+  header: {
     alignItems: 'center',
-    borderRadius: 12,
-    padding: 32,
+    paddingVertical: 48,
+    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
-    gap: 12,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    color: colors.white,
+    marginBottom: 4,
   },
   email: {
     fontSize: 16,
+    color: colors.white,
+    opacity: 0.8,
   },
   section: {
-    borderRadius: 12,
-    padding: 20,
-    gap: 12,
+    paddingHorizontal: 20,
+    marginTop: 32,
   },
-  infoRow: {
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 16,
+  },
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
   },
-  infoText: {
+  menuText: {
+    flex: 1,
     fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginLeft: 16,
+  },
+  logoutButton: {
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  logoutText: {
+    color: colors.error,
   },
 });
